@@ -23,7 +23,7 @@ const frag_texture = `
 			st.x*=u_resolution.x/u_resolution.y;
 			float sc = 1.*u_resolution.x/100.;
 			st*=sc;
-			st*=vec2(3.,1.);
+			st*=vec2(8.,1.);
 		
 			// st.y = 1.0 - st.y;
 			vec3 color = vec3(0.);
@@ -48,6 +48,3 @@ const frag_texture = `
 		gl_FragColor= vec4(color,1.0);
 	}
 `
-
-
-
