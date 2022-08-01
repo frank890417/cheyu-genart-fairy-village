@@ -25,7 +25,11 @@ const frag = `
 		st.x*=u_resolution.x/u_resolution.y;
 		vec2 stBorder =st;
 
-		
+		// st.x+=pNoise(st*20.,5)*pNoise(st*10.+2.,10)/20.;
+		// st.y += pNoise(st * 20., 5) * pNoise(st * 10. + 2., 10) / 20.;
+		// st.x+=cnoise(vec3(st*400.,10.))/500.;
+		// st.y += cnoise(vec3(st * 400., 10.)) / 500.;
+
 		stBorder.x+=cnoise(vec3(st*1000.,100.))/500.;
 		stBorder.y+=cnoise(vec3(st*1000.,1000.))/500.; 
 		

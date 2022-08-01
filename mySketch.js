@@ -1,17 +1,65 @@
 // noprotect
-let themes = [
-	// "d72638-3f88c5-f49d37-140f2d-f22b29-fe4a49-fed766-7fbb8f-009fb7-e6e6ea-fff-102a54".split("-").map(a => "#" + a),
-	// "0e131f-38405f-59546c-8b939c-ff0035-2c0735-fff".split("-").map(a => "#" + a),
-	// "261447-f1e3f3-c2bbf0-8fb8ed-62bfed-3590f3-fff-FF8680".split("-").map(a => "#" + a),
-	// "ffc854-000-ffc854-000-fff".split("-").map(a => "#" + a),
-	// "07252F-7c6a0a-babd8d-ffdac6-fa9500-eb6424-FCFBF6".split("-").map(a => "#" + a),
-	"000-71f79f-3dd6d0-15b097-28190e-fff".split("-").map(a => "#" + a)
+let themes = [{
+		label: "Forest",
+		colors: "073b3a-0b6e4f-08a045-6bbf59-ddb771-fff".split("-").map(a => "#" + a)
+	},
 
+	{
+		label: "Blackwhite",
+		colors: "fff-eee-eaeaea-fafafa-111".split("-").map(a => "#" + a),
+	},
+
+	{
+		label: "Carnival",
+		colors: "d72638-3f88c5-f49d37-140f2d-f22b29-fe4a49-fed766-7fbb8f-009fb7-e6e6ea-fff-102a54".split("-").map(a => "#" + a),
+	},
+
+	{
+		label: "Modern",
+		colors: "0e131f-38405f-59546c-8b939c-ff0035-2c0735-fff".split("-").map(a => "#" + a),
+	},
+
+	{
+		label: "Pastel",
+		colors: "261447-f1e3f3-c2bbf0-8fb8ed-62bfed-3590f3-fff-FF8680".split("-").map(a => "#" + a),
+	},
+
+	{
+		label: "Taxi",
+		colors: "ffc854-000-ffc854-000-fff".split("-").map(a => "#" + a),
+	},
+
+	{
+		label: "Breeze",
+		colors: "07252F-7c6a0a-babd8d-ffdac6-fa9500-eb6424-FCFBF6".split("-").map(a => "#" + a),
+	},
+
+
+	{
+		label: "cyber",
+		colors: "000-28190e-71f79f-3dd6d0-15b097-fff".split("-").map(a => "#" + a),
+	},
+
+	{
+		label: "Cold",
+		colors: "0a369d-4472ca-5e7ce2-92b4f4-cfdee7-fff-000".split("-").map(a => "#" + a),
+	},
+
+	{
+		label: "Honey",
+		colors: "584d3d-9f956c-cbbf7a-f4e87c-ebf38b-fed766-fff-ffa856-000-e5dede".split("-").map(a => "#" + a),
+	},
+
+	{
+		label: "Enchanted",
+		colors: "e6e1c6-afac96-c0bda5-cc978e-f39c6b-f96a68-ff3864-261447-3a2958-fff".split("-").map(a => "#" + a),
+	},
+
+	{
+		label: "Delicious",
+		colors: "000-1b2618-daddd8-c7d59f-daddd8-c7d59f-b7ce63-8fb339-4b5842-fafafa-FF715B".split("-").map(a => "#" + a)
+	},
 ]
-// "0a369d-4472ca-5e7ce2-92b4f4-cfdee7-fff".split("-").map(a => "#" + a),
-// "584d3d-9f956c-cbbf7a-f4e87c-ebf38b-fed766-fff-ffa856-000-e5dede".split("-").map(a => "#" + a),
-// "e6e1c6-afac96-c0bda5-cc978e-f39c6b-f96a68-ff3864-261447-3a2958-fff".split("-").map(a => "#" + a),
-// "daddd8-c7d59f-b7ce63-8fb339-4b5842-fafafa-daddd8-c7d59f-b7ce63-8fb339-4b5842-fafafa-daddd8-c7d59f-b7ce63-8fb339-4b5842-fafafa-FF715B".split("-").map(a => "#" + a)
 //"fff-9fa2b2-3c7a89-2e4756-16262e-000-fff-9fa2b2-3c7a89-2e4756-16262e-000-fff".split("-").map(a=>"#"+a),
 
 
@@ -19,8 +67,8 @@ var features = {}
 
 
 let colors
-var DEFAULT_SIZE = 1250;
-let ratio = 1250 / 1000
+var DEFAULT_SIZE = 1200;
+let ratio = 1000 / 1000
 var WIDTH = window.innerWidth;
 var HEIGHT = window.innerHeight;
 var DIM = HEIGHT;
@@ -58,6 +106,7 @@ class Particle {
 			v: createVector(0, 0),
 			a: createVector(0, 0),
 			r: random(100),
+			pointCount: random([3, 5, 6, 7, 8, 9]),
 			followRotateFactor: random(features.rotateFactors),
 			color: random(colors),
 			altColor: random(colors),
@@ -66,7 +115,7 @@ class Particle {
 			shrinkRatio: random([0.995, 0.99, 0.99, 0.98, 0.95]),
 			vNoiseScale: features.vNoiseScale,
 			color2: random([255, 255, random(colors)]),
-
+			alive: true,
 			randomId: int(random(10000)),
 			xSpeedFactor: random([6, 8, 10, 12]),
 			ySpeedFactor: random([6, 8, 10, 12])
@@ -76,58 +125,133 @@ class Particle {
 		Object.assign(this, def)
 	}
 	draw(g) {
+
 		g.push()
 		// g.blendMode(MULTIPLY)
 		let clr = color(this.color)
-		// 			clr.setAlpha(500*map(this.r,200,0,0.02,0,true))
-		// 			let colorVar = 30
-		// 			clr.setRed(clr._getRed()+noise(this.p.x/5,this.p.y/5)*colorVar-colorVar/2)
-		// 			clr.setGreen(clr._getGreen()+noise(1000,this.p.x/5,this.p.y/5)*colorVar-colorVar/2)
-		// 			clr.setBlue(clr._getBlue()+noise(this.p.x/5,1000,this.p.y/5)*colorVar-colorVar/2)
-
-
-		// 			if (
-		// 			g.stroke(clr)
-		// 			g.blendMode(MULTIPLY)
-		// 			if (frameCount>10) return
-		// 			g.noFill()
 		g.fill(clr)
+		g.drawingContext.shadowColor = color(0, 4)
 
-		g.translate(this.p)
-		if (features.style == "normal") {
-			g.push()
+		if (features.style == "glow") {
+			if (frameCount % 16 == 1) {
+				g.fill(bgColor)
+				g.strokeWeight(2)
+				if (frameCount == 1) g.strokeWeight(3)
+				g.stroke(clr)
+				let fogColor = color(this.color)
+				fogColor.setAlpha(50)
+				g.drawingContext.shadowColor = fogColor
 
-			if (features.shapeType == "triangle") {
-				g.rotate(frameCount / 50)
-				g.triangle(0, -this.r / 2, this.r / 2, this.r / 2, 0, this.r / 2)
-
-			} else if (features.shapeType == "rect") {
-				// if (frameCount % 500 == 30) {
-				// 	g.strokeWeight(1)
-				// 	g.stroke(bgColor)
-				// } 
-				g.rect(0, 0, this.r, this.r)
-			} else if (features.shapeType == "ellipse") {
-				g.ellipse(0, 0, this.r, this.r)
+			} else {
+				g.blendMode(SCREEN)
+				g.fill(bgColor)
+				g.noStroke()
 			}
-			g.pop()
-			// //fill 
-			// if (features.shapeType=="ellipse"){
-			// }
-			// // g.ellipse(0, 0, this.r, this.r)
-			// // g.triangle(0, 0, this.r, this.r, 0, this.r)
-			// g.rect(0, 0, this.r, this.r)
-
-
-
-			// if (noise(this.p.x/300,this.p.y/300)<0.3 && random()<0.02){
-			// 	overlayGraphics.push()
-			// 		overlayGraphics.noStroke()
-			// 		overlayGraphics.fill(clr)
-			// 		overlayGraphics.rect(this.p.x+random(-this.r,this.r),this.p.y+random(-this.r,this.r),20,-20,10)
-			// 	overlayGraphics.pop()
-			// }
 		}
+
+		g.translate(this.p.x, this.p.y)
+		// g.scale(map(this.p.y, 0, height, 0, 2))
+		// g.translate((this.p.x - width / 2) * map(this.p.y, 0, height, 0.5, 2) + width / 2, (this.p.y - width / 2) / 1.2 + width / 2)
+
+
+		g.push()
+
+
+		if (features.shapeType == "polygon") {
+
+
+			g.translate(0, -frameCount / 10)
+			g.rotate(frameCount / 500)
+			g.drawingContext.shadowOffsetY = 10
+			g.drawingContext.shadowOffsetX = 10
+			// g.drawingContext.shadowColor = color(0, 4)
+			g.beginShape()
+			let lines = []
+			for (let i = 0; i < this.pointCount; i++) {
+				let ang = i / this.pointCount * 2 * PI
+				let rr = this.r * 0.8
+				g.vertex(cos(ang) * rr, sin(ang) * rr)
+				if (this.randomId % 5 == 1) {
+					lines.push([0, 0, cos(ang) * rr, sin(ang) * rr])
+				}
+			}
+			g.endShape(CLOSE)
+			lines.forEach(line => {
+				g.line(0, 0, line[2], line[3])
+			})
+
+
+		} else if (features.shapeType == "rect") {
+			g.translate(frameCount / 20, frameCount / 20)
+			if (frameCount == 1) {
+
+				g.push()
+				g.stroke(this.color)
+				g.fill(bgColor)
+				g.strokeWeight(2)
+				g.rect(0, 0, this.r * 1.1 * 1., this.r * 1.1 * 1.)
+
+				g.pop()
+			}
+			// g.translate(-this.r / 3, -this.r / 3)
+			// if (this.randomId % 5 == 0) {
+			// 	g.drawingContext.setLineDash([20, 20])
+			// 	g.strokeWeight(5)
+			// 	g.stroke(this.color)
+			// }
+			g.drawingContext.shadowOffsetY = 10
+			g.drawingContext.shadowOffsetX = 10
+			g.rect(0, 0, this.r * 1., this.r * 1., 2)
+
+			if (frameCount % 80 == 1 && this.randomId % 3 == 0) {
+
+				for (var y = 0; y < this.r - 15; y += 10) {
+					g.push()
+					g.translate(this.r, y + 10)
+					g.rotate(-PI / 4)
+					g.fill(this.color)
+					g.ellipse(0, 0, 1, y % 100 == 0 ? 20 : 5)
+					g.pop()
+				}
+				for (var x = 0; x < this.r; x += 10) {
+					g.push()
+					g.translate(x, this.r)
+					g.rotate(-PI / 4)
+					g.fill(this.color)
+					g.rect(0, 0, 1, x % 100 == 0 ? 20 : 5)
+					g.pop()
+				}
+			}
+
+
+		} else if (features.shapeType == "ellipse") {
+			if (frameCount == 1) {
+
+				g.push()
+				g.stroke(this.color)
+				g.fill(bgColor)
+				g.strokeWeight(2)
+				g.ellipse(0, 0, this.r, this.r)
+
+				g.pop()
+			}
+			g.translate(0, -frameCount / 50)
+			g.drawingContext.shadowOffsetY = 10
+			g.drawingContext.shadowOffsetX = 10
+			g.ellipse(0, 0, this.r, this.r)
+		}
+		g.pop()
+
+
+
+
+		// if (noise(this.p.x/300,this.p.y/300)<0.3 && random()<0.02){
+		// 	overlayGraphics.push()
+		// 		overlayGraphics.noStroke()
+		// 		overlayGraphics.fill(clr)
+		// 		overlayGraphics.rect(this.p.x+random(-this.r,this.r),this.p.y+random(-this.r,this.r),20,-20,10)
+		// 	overlayGraphics.pop()
+		// } 
 
 
 		// g.ellipse(this.r*2+10,0,3,3)
@@ -161,7 +285,7 @@ class Particle {
 			g.fill(bgColor)
 			g.ellipse(this.r / 2, 0, 2, 2)
 		}
-		if (this.randomId % 60 == 0) {
+		if (this.randomId % 80 == 0) {
 
 			g.fill(255)
 			let whiteR = (noise(this.randomId, this.p.x / 40, this.p.y / 40) * 2) + 1
@@ -194,20 +318,37 @@ class Particle {
 		// g.rotate(PI/4-PI/2)
 		// g.rect(0,0,-this.r*2,2)
 		g.pop()
+
 	}
 	update() {
-		if (abs(brightness(color(this.altColor)) - brightness(color(this.color))) < 90) {
+		if (this.randomId % 1 == 0 && abs(brightness(color(this.altColor)) - brightness(color(this.color))) < 80) {
 			this.color = lerpColor(color(this.color), color(this.altColor), 0.005)
+		}
+		if (this.randomId % 40 == 0 && frameCount % 50 == 0) {
+			this.r -= 10
+			this.p.x += 5
+			this.p.y += 5
+		}
+		if (this.randomId % 77 == 0 && frameCount % 50 == 0) {
+			this.r *= 1.05
+			this.p.x += 5
+			this.p.y += 5
 		}
 		this.p.add(this.v)
 		this.v.add(this.a)
 		this.r *= this.shrinkRatio
-		this.alive = this.r > 0.1
+		// this.shrinkRatio += noise(this.r, this.randomId) * sin(frameCount / 5) / 2000
+
+
+		if (this.r < 0.1) {
+			this.alive = false
+		}
+		if (frameCount > 500 && random() < 0.05 && this.randomId % 2 == 0) {
+			this.alive = false
+		}
 		if (random() < 0.25 && frameCount % 30 == 0 && this.randomId % 5 == 0) {
-			this.color2 = random(colors)
 			this.color = random(colors)
-			// this.color = lerpColor(color(this.color), color(this.altColor), random([0.1]))
-			// this.color2 = random(colors)
+			this.color2 = lerpColor(color(random(colors)), color(this.color), 0.6)
 		}
 
 		let steplize = (n, l) => int(n * l) / l
@@ -221,11 +362,6 @@ class Particle {
 		//rotate center
 		this.v.x += cos(ang + PI / 2) * this.followRotateFactor;
 		this.v.y += sin(ang + PI / 2) * this.followRotateFactor;
-		// 		}else{
-		// 			this.v.x = (steplize(noise(this.p.x/50,this.p.y/50)-0.5,this.steps[0]))*this.xSpeedFactor
-		// 			this.v.y = (steplize(noise(this.p.y/50,this.p.x/50)-0.5,this.steps[1]))*this.ySpeedFactor
-
-		// 		}
 
 		wormholes.forEach(w => {
 			let ang = atan2(this.p.y - w.p.y, this.p.x - w.p.x)
@@ -259,13 +395,10 @@ class Particle {
 			let newAng = int(ang / 2 / PI * angStepCount) / angStepCount * 2 * PI
 			this.v.x = amp * cos(newAng)
 			this.v.y = amp * sin(newAng)
-			// originalGraphics.fill('red')
-			// originalGraphics.ellipse(this.p.x,this.p.y,5,5)
 
 		}
 
 
-		// this.v.add(this.p.copy().sub(createVector(width/2,height/2)).mult(-0.002))
 	}
 
 }
@@ -281,37 +414,15 @@ let bgColor
 let sortedColors = []
 
 function preload() {
-	// console.log(random)
-	// randomSeed(3390)
 	noiseSeed(random() * 10000)
-	colors = random(themes)
-
-	sortedColors = colors.sort((a, b) => brightness(color(b)) - brightness(color(a)))
-
 
 	theShader = new p5.Shader(this.renderer, vert, frag)
 	theShaderTexture = new p5.Shader(this.renderer, vert, frag_texture)
-	// overallTexture = loadImage("canvas-light.jpeg") 
 
-
-	features.style = 'normal'
-	// features.style=random()<1?'stroke':'normal'
-	// features.style=random()<0.2?'shape':features.style 
-	features.rotateFactors = random([
-		[0],
-		[0],
-		[0],
-		[0],
-		[0, 0.05],
-		[0, -0.05],
-		[0.05, 0, 0, 0, 0, 0, 0, -0.05]
-
-	])
-	features.vNoiseScale = random([40, 50, 75, 100, 120])
-	features.hasGrid = false
-	features.wormholeCount = random([1, 2, 3])
-	features.shapeType = random(['rect', 'ellipse'])
-	features.distortFactor = features.shapeType == 'ellipse' ? 0.8 : 0.0
+	features = calFeatures()
+	colors = random(themes).colors
+	sortedColors = colors.sort((a, b) => brightness(color(b)) - brightness(color(a)))
+	console.log(features)
 }
 
 function setup() {
@@ -332,7 +443,6 @@ function setup() {
 	// theShaderTexture.setUniform('u_canvas_tex',overallTexture)
 	overallTexture.rect(-width / 2, -height / 2, width, height)
 
-
 	webGLCanvas = createGraphics(width, height, WEBGL)
 	originalGraphics = createGraphics(width, height)
 	overlayGraphics = createGraphics(width, height)
@@ -344,7 +454,7 @@ function setup() {
 	let rx = random([-0.1, -0.05, 0, 0, 0.05, 0.1]) * width;
 	let ry = random([-0.1, -0.05, 0, 0, 0.05, 0.1]) * height
 	let ra = random([-0.2, -0.1, 0.1, 0.2])
-	let rscale = random([1.05])
+	let rscale = random([1.05, 1.1, 1.15, 1.2])
 
 	for (let g of [originalGraphics, overlayGraphics]) {
 		// console.log(g)
@@ -355,6 +465,7 @@ function setup() {
 		g.scale(rscale)
 		// }
 		g.translate(-width / 2, -height / 2)
+
 	}
 
 
@@ -362,27 +473,16 @@ function setup() {
 
 	originalGraphics.noStroke()
 
-	// bgColor = color(240)
+	// bgColor = color(20)
 	bgColor = color(random(colors))
-
-	// if (features.style == "normal") {
-	// 	bgColor = color(random(sortedColors))
-	// } else {
-	// 	bgColor = color(random(sortedColors.slice(0, 2).concat(['#fff'])))
-	// }
-	if (features.style == "stroke") bgColor = color(255)
-	if (features.style == "shape") bgColor = color(255)
-
-	// bgColor = color('#f9f9f7')
-	// bgColor=color(255)
-
-
-	// originalGraphics.background(bgColor); 
+	if (features.style == "glow") {
+		bgColor = color(0)
+	}
 
 	let pairId = int(random(7))
 
 	let spanOptions = [8, 10, 12, 20, 32, 44, 60, 68]
-	let maxSizeOptions = [160, 200, 300, 400, 500, 600, 840, 900]
+	let maxSizeOptions = [200, 300, 400, 500, 600, 700, 840, 900]
 
 	let minPairId = 0
 	let maxPairId = 7
@@ -395,13 +495,14 @@ function setup() {
 	let gapRatio = random([0.35, 0.4, 0.45, 0.5])
 	let panScale = random([0, 1, 2, 5, 10, 15, 20, 25])
 	let panRatio = random([0, 0, random([0, 5, 10, 15])])
-	// console.log(span,maxSize)
 	//noprotect
 	for (let x = 0; x <= width; x += span) {
 		if (noise(x / 2) < ignorePossibility) continue
-		if (features.shapeType == 'rect') {
-			if (sin(x + seed) < 0.2) continue
-		}
+		let skipRatio = features.shapeType == 'rect' ? -0.7 : -0.8
+		// if (features.shapeType == 'rect') {
+		if (sin(x + seed) < skipRatio) continue
+		if (cos(x + seed * 2) < skipRatio) continue
+		// }
 		//noprotect
 		for (let y = 0; y <= height; y += span) {
 			// if (noise(x,y)<ignorePossibility) continue
@@ -419,7 +520,7 @@ function setup() {
 		}
 	}
 
-	// particles.sort((a,b)=>random()<0.5)
+	// particles.sort((a, b) => random() < 0.5)
 
 	for (let i = 0; i < features.wormholeCount; i++) {
 		let w = new Wormhole({
@@ -464,6 +565,11 @@ function draw() {
 	rect(0, 0, width * 2, height * 2)
 
 	webGLCanvas.rect(-width / 2, -height / 2, width, height)
+	// webGLCanvas.push()
+	// webGLCanvas.rotateY(frameCount / 100)
+	// // webGLCanvas.box(800, 800, 800)
+	// webGLCanvas.pop()
+
 	// webGLCanvas.noStroke()
 	// webGLCanvas.push()
 	// webGLCanvas.rotateY(frameCount/300)
@@ -495,23 +601,43 @@ function draw() {
 
 	fill(bgColor);
 	rect(0, 0, width, height)
-
-	push()
-	// if (features.hasGrid) {
-	// 	blendMode(MULTIPLY)
-	// 	//test grid
-	// 	for (let x = 0; x < width; x += gridSpan) {
-	// 		stroke(0, 20)
-	// 		line(x, 0, x, height)
-	// 	}
-	// 	for (let y = 0; y < height; y += gridSpan) {
-	// 		stroke(0, 20)
-	// 		line(0, y, width, y)
-	// 	}
-	// }
-	blendMode(BLEND)
-
 	let gridSpan = 20
+	push()
+	if (features.hasGrid) {
+		if (features.shapeType == 'rect') {
+			push()
+			blendMode(MULTIPLY)
+
+			//test grid
+			for (let x = -gridSpan * 2; x <= width + gridSpan; x += gridSpan) {
+				stroke(0, 20)
+				line(x, 0, x, height)
+			}
+			for (let y = -gridSpan * 2; y <= height + gridSpan; y += gridSpan) {
+				stroke(0, 20)
+				line(0, y, width, y)
+			}
+			pop()
+		}
+		if (features.shapeType == 'ellipse') {
+			blendMode(BLEND)
+			for (var i = 0; i < 3; i++) {
+
+				push()
+				strokeWeight(1)
+				translate(width / 2, height / 2)
+				rotate(i / 3 * PI * 2)
+				translate(-width / 2, -height / 2)
+				for (let x = -gridSpan * 8; x <= width + gridSpan * 4; x += 50) {
+					stroke(255, 80)
+					line(x, 0, x, height + gridSpan * 10)
+				}
+				pop()
+			}
+		}
+
+	}
+
 	// for (let x = 0; x < width; x += gridSpan) {
 	// 	for (let y = 0; y < height; y += gridSpan) {
 	// 		if (noise(x / 10, y) > 0.6) {
@@ -522,17 +648,15 @@ function draw() {
 	// 	}
 	// }
 
-	if (features.style == 'normal') {
-		image(webGLCanvas, 0, 0)
-		// blendMode(ADD)
-		// image(webGLCanvas, 0, 0)
+	image(webGLCanvas, 0, 0)
+	// blendMode(ADD)
+	// image(webGLCanvas, 0, 0)
 
-		push()
+	push()
 
-		// image(webGLCanvas,0,0)
-		image(overlayGraphics, 0, 0)
-		pop()
-	}
+	// image(webGLCanvas,0,0)
+	image(overlayGraphics, 0, 0)
+	pop()
 	pop()
 	// pop()
 	// 	push()
