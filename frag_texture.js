@@ -23,23 +23,23 @@ const frag_texture = `
 			st.x*=u_resolution.x/u_resolution.y;
 			float sc = 1.*u_resolution.x/100.;
 			st*=sc;
-			st*=vec2(8.,1.);
+			st*=vec2(4.,1.);
 		
 			// st.y = 1.0 - st.y;
 			vec3 color = vec3(0.);
-			color+=cnoise(vec3(st*20.,10.))/7./2.;
-			color+=cnoise(vec3(st*30.,10.))/9./2.;
-			color+=cnoise(vec3(st*10.,10.))/9./2.;
+			color+=cnoise(vec3(st*20.,10.))/7./3.;
+			color+=cnoise(vec3(st*30.,10.))/9./3.;
+			color+=cnoise(vec3(st*10.,10.))/9./3.;
 		
-			color+=cnoise(vec3(st*200.,10.))/8.;
-			color+=cnoise(vec3(st*300.,10.))/10.;
-			color+=cnoise(vec3(st*100.,10.))/10.;
+			color+=cnoise(vec3(st*200.,10.))/9.;
+			color+=cnoise(vec3(st*300.,10.))/11.;
+			color+=cnoise(vec3(st*100.,10.))/11.;
 		
-			color+=cnoise(vec3(st*200.,10.))/8.;
-			color+=cnoise(vec3(st*300.,10.))/10.;
-			color+=cnoise(vec3(st*100.,10.))/10.;
-			color+=pNoise(st*10.,5)*pNoise(st*10.+2.,10)/2.;
-			color+=pNoise(st*30.,5)*pNoise(st*40.+2.,10)/2.; 
+			color+=cnoise(vec3(st*200.,10.))/9.;
+			color+=cnoise(vec3(st*300.,10.))/11.;
+			color+=cnoise(vec3(st*100.,10.))/11.;
+			color+=pNoise(st*10.,5)*pNoise(st*10.+2.,10)/3.;
+			color+=pNoise(st*30.,5)*pNoise(st*40.+2.,10)/3.; 
 			color/=2.;
 		
 			color = 1.-color;

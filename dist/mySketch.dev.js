@@ -7,71 +7,68 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 // noprotect
-var themes = [{
-  label: "Forest",
-  colors: "073b3a-0b6e4f-08a045-6bbf59-ddb771-fff".split("-").map(function (a) {
+var themes = [// {
+// 	label: "Forest",
+// 	colors: "073b3a-0b6e4f-08a045-6bbf59-ddb771-fff".split("-").map(a => "#" + a)
+// },
+// {
+// 	label: "Blackwhite",
+// 	colors: "fff-eee-eaeaea-fafafa-111".split("-").map(a => "#" + a),
+// },
+// {
+// 	label: "Carnival",
+// 	colors: "d72638-3f88c5-f49d37-140f2d-f22b29-fe4a49-fed766-7fbb8f-009fb7-e6e6ea-fff-102a54".split("-").map(a => "#" + a),
+// },
+// {
+// 	label: "Modern",
+// 	colors: "0e131f-38405f-59546c-8b939c-ff2244-2c0735-fff".split("-").map(a => "#" + a),
+// },
+// {
+// 	label: "Pastel",
+// 	colors: "261447-f1e3f3-c2bbf0-8fb8ed-62bfed-3590f3-fff-FF8680".split("-").map(a => "#" + a),
+// },
+// {
+// 	label: "Taxi",
+// 	colors: "ffc854-000-ffc854-000-fff".split("-").map(a => "#" + a),
+// },
+// {
+// 	label: "Breeze",
+// 	colors: "07252F-7c6a0a-babd8d-ffdac6-fa9500-eb6424-FCFBF6".split("-").map(a => "#" + a),
+// },
+// {
+// 	label: "cyber",
+// 	colors: "000-28190e-71f79f-3dd6d0-15b097-fff".split("-").map(a => "#" + a),
+// },
+// {
+// 	label: "Cold",
+// 	colors: "0a369d-4472ca-5e7ce2-92b4f4-cfdee7-fff-000".split("-").map(a => "#" + a),
+// },
+// {
+// 	label: "HoneyMustard",
+// 	colors: "584d3d-9f956c-cbbf7a-f4e87c-ebf38b-fed766-fff-ffa856-000-e5dede".split("-").map(a => "#" + a),
+// },
+// {
+// 	label: "Enchanted",
+// 	colors: "e6e1c6-afac96-c0bda5-cc978e-f39c6b-f96a68-ff3864-261447-3a2958-fff".split("-").map(a => "#" + a),
+// },
+// {
+// 	label: "Delicious",
+// 	colors: "000-1b2618-daddd8-c7d59f-daddd8-c7d59f-b7ce63-8fb339-4b5842-fafafa-FF715B".split("-").map(a => "#" + a)
+// },
+{
+  label: "fire",
+  colors: "a20021-f52f57-f79d5c-f3752b-ededf4-000".split("-").map(function (a) {
     return "#" + a;
   })
-}, {
-  label: "Blackwhite",
-  colors: "fff-eee-eaeaea-fafafa-111".split("-").map(function (a) {
-    return "#" + a;
-  })
-}, {
-  label: "Carnival",
-  colors: "d72638-3f88c5-f49d37-140f2d-f22b29-fe4a49-fed766-7fbb8f-009fb7-e6e6ea-fff-102a54".split("-").map(function (a) {
-    return "#" + a;
-  })
-}, {
-  label: "Modern",
-  colors: "0e131f-38405f-59546c-8b939c-ff0035-2c0735-fff".split("-").map(function (a) {
-    return "#" + a;
-  })
-}, {
-  label: "Pastel",
-  colors: "261447-f1e3f3-c2bbf0-8fb8ed-62bfed-3590f3-fff-FF8680".split("-").map(function (a) {
-    return "#" + a;
-  })
-}, {
-  label: "Taxi",
-  colors: "ffc854-000-ffc854-000-fff".split("-").map(function (a) {
-    return "#" + a;
-  })
-}, {
-  label: "Breeze",
-  colors: "07252F-7c6a0a-babd8d-ffdac6-fa9500-eb6424-FCFBF6".split("-").map(function (a) {
-    return "#" + a;
-  })
-}, {
-  label: "cyber",
-  colors: "000-28190e-71f79f-3dd6d0-15b097-fff".split("-").map(function (a) {
-    return "#" + a;
-  })
-}, {
-  label: "Cold",
-  colors: "0a369d-4472ca-5e7ce2-92b4f4-cfdee7-fff-000".split("-").map(function (a) {
-    return "#" + a;
-  })
-}, {
-  label: "Honey",
-  colors: "584d3d-9f956c-cbbf7a-f4e87c-ebf38b-fed766-fff-ffa856-000-e5dede".split("-").map(function (a) {
-    return "#" + a;
-  })
-}, {
-  label: "Enchanted",
-  colors: "e6e1c6-afac96-c0bda5-cc978e-f39c6b-f96a68-ff3864-261447-3a2958-fff".split("-").map(function (a) {
-    return "#" + a;
-  })
-}, {
-  label: "Delicious",
-  colors: "000-1b2618-daddd8-c7d59f-daddd8-c7d59f-b7ce63-8fb339-4b5842-fafafa-FF715B".split("-").map(function (a) {
-    return "#" + a;
-  })
-}]; //"fff-9fa2b2-3c7a89-2e4756-16262e-000-fff-9fa2b2-3c7a89-2e4756-16262e-000-fff".split("-").map(a=>"#"+a),
+}]; // {
+// 	label: "Sunset",
+// 	colors: "61210f-ea2b1f-edae49-f9df74-f9edcc-3d1212-fff".split("-").map(a => "#" + a)
+// }
+//"fff-9fa2b2-3c7a89-2e4756-16262e-000-fff-9fa2b2-3c7a89-2e4756-16262e-000-fff".split("-").map(a=>"#"+a),
 
 var features = {};
 var colors;
-var DEFAULT_SIZE = 1200;
+var DEFAULT_SIZE = 1440;
 var ratio = 1000 / 1000;
 var WIDTH = window.innerWidth;
 var HEIGHT = window.innerHeight;
@@ -144,6 +141,8 @@ function () {
   _createClass(Particle, [{
     key: "draw",
     value: function draw(g) {
+      var _this = this;
+
       g.push(); // g.blendMode(MULTIPLY)
 
       var clr = color(this.color);
@@ -152,7 +151,14 @@ function () {
 
       if (features.style == "glow") {
         if (frameCount % 16 == 1) {
-          g.fill(bgColor);
+          if (this.randomId % 500 != 0 || this.r > 50) {
+            g.fill(bgColor);
+          } else {
+            clr.setAlpha(50);
+            g.fill(clr);
+            g.blendMode(SCREEN);
+          }
+
           g.strokeWeight(2);
           if (frameCount == 1) g.strokeWeight(3);
           g.stroke(clr);
@@ -174,6 +180,11 @@ function () {
       if (features.shapeType == "polygon") {
         g.translate(0, -frameCount / 10);
         g.rotate(frameCount / 500);
+
+        if (this.randomId % 40 == 0) {
+          g.rotate(frameCount / 100 + this.randomId % 2);
+        }
+
         g.drawingContext.shadowOffsetY = 10;
         g.drawingContext.shadowOffsetX = 10; // g.drawingContext.shadowColor = color(0, 4)
 
@@ -182,17 +193,17 @@ function () {
 
         for (var i = 0; i < this.pointCount; i++) {
           var ang = i / this.pointCount * 2 * PI;
-          var rr = this.r * 0.8;
+          var rr = this.r;
           g.vertex(cos(ang) * rr, sin(ang) * rr);
 
-          if (this.randomId % 5 == 1) {
-            lines.push([0, 0, cos(ang) * rr, sin(ang) * rr]);
+          if (this.randomId % 200 == 0) {
+            lines.push([cos(ang) * rr, sin(ang) * rr]);
           }
         }
 
         g.endShape(CLOSE);
         lines.forEach(function (line) {
-          g.line(0, 0, line[2], line[3]);
+          g.line(-_this.r / 5, 0, line[0], line[1]);
         });
       } else if (features.shapeType == "rect") {
         g.translate(frameCount / 20, frameCount / 20);
@@ -214,7 +225,20 @@ function () {
 
         g.drawingContext.shadowOffsetY = 10;
         g.drawingContext.shadowOffsetX = 10;
-        g.rect(0, 0, this.r * 1., this.r * 1., 2);
+
+        if (this.randomId % 3 == 0 && frameCount > 400 + noise(this.randomId * 5) * 300) {
+          g.rect(0, 0, this.r / 3, this.r / 3);
+          g.rect(this.r * 2 / 3, 0, this.r / 3, this.r / 3);
+          g.rect(0, this.r * 2 / 3, this.r / 3, this.r / 3);
+          g.rect(this.r * 2 / 3, this.r * 2 / 3, this.r / 3, this.r / 3);
+        } else {
+          g.rect(0, 0, this.r * 1., this.r * 1.);
+        }
+
+        if (this.randomId % 80 == 0) {
+          g.line(0, 0, this.r, this.r);
+          g.line(0, this.r, this.r, 0);
+        }
 
         if (frameCount % 80 == 1 && this.randomId % 3 == 0) {
           for (var y = 0; y < this.r - 15; y += 10) {
@@ -323,7 +347,7 @@ function () {
   }, {
     key: "update",
     value: function update() {
-      var _this = this;
+      var _this2 = this;
 
       if (this.randomId % 1 == 0 && abs(brightness(color(this.altColor)) - brightness(color(this.color))) < 80) {
         this.color = lerpColor(color(this.color), color(this.altColor), 0.005);
@@ -349,7 +373,7 @@ function () {
         this.alive = false;
       }
 
-      if (frameCount > 500 && random() < 0.05 && this.randomId % 2 == 0) {
+      if (frameCount > 650 && random() < 0.04 && this.randomId % 6 <= 3) {
         this.alive = false;
       }
 
@@ -369,15 +393,18 @@ function () {
       var r = dist(this.p.x, this.p.y, width / 2, height / 2); //rotate center
 
       this.v.x += cos(ang + PI / 2) * this.followRotateFactor;
-      this.v.y += sin(ang + PI / 2) * this.followRotateFactor;
+      this.v.y += sin(ang + PI / 2) * this.followRotateFactor; // // go away from center
+      // this.v.x += -cos(ang) * 0.2
+      // this.v.y += -sin(ang) * 0.2;
+
       wormholes.forEach(function (w) {
-        var ang = atan2(_this.p.y - w.p.y, _this.p.x - w.p.x);
-        var dd = dist(_this.p.x, _this.p.y, w.p.x, w.p.y);
+        var ang = atan2(_this2.p.y - w.p.y, _this2.p.x - w.p.x);
+        var dd = dist(_this2.p.x, _this2.p.y, w.p.x, w.p.y);
         var ratio = map(dd, 0, w.r, 1, 0, true);
         var force = w.intensity * ratio * ratio; //rotate center
 
-        _this.v.x += w.rotate * force * cos(ang + PI / 2) + w.attract * force * cos(ang);
-        _this.v.y += w.rotate * force * sin(ang + PI / 2) + w.attract * force * sin(ang);
+        _this2.v.x += w.rotate * force * cos(ang + PI / 2) + w.attract * force * cos(ang);
+        _this2.v.y += w.rotate * force * sin(ang + PI / 2) + w.attract * force * sin(ang);
       }); //test
       // 		if (noise(this.p.x/120,this.p.y/120)<0.2){
       // 			// originalGraphics.fill('red')
@@ -395,6 +422,17 @@ function () {
         var newAng = int(_ang / 2 / PI * angStepCount) / angStepCount * 2 * PI;
         this.v.x = amp * cos(newAng);
         this.v.y = amp * sin(newAng);
+      }
+
+      if (features.shapeType == 'polygon') {
+        if (frameCount % 100 == 0 && this.r >= 200) {
+          for (var i = 0; i < this.pointCount; i++) {
+            var _ang2 = i / this.pointCount * 2 * PI;
+
+            var xx = this.r * cos(_ang2) / 2;
+            var yy = this.r * sin(_ang2) / 2;
+          }
+        }
       }
     }
   }]);
@@ -471,10 +509,10 @@ function setup() {
   }
 
   var pairId = int(random(7));
-  var spanOptions = [8, 10, 12, 20, 32, 44, 60, 68];
-  var maxSizeOptions = [200, 300, 400, 500, 600, 700, 840, 900];
-  var minPairId = 0;
-  var maxPairId = 7;
+  var spanOptions = [10, 12, 16, 20, 32, 44, 60, 68, 72];
+  var maxSizeOptions = [250, 300, 400, 500, 600, 700, 840, 900, 960];
+  var minPairId = features.minPairId;
+  var maxPairId = features.maxPairId;
   var span = spanOptions[pairId];
   var maxSize = maxSizeOptions[pairId];
   var pairNoiseScale = random([10, 20, 100, 200]);
@@ -482,34 +520,91 @@ function setup() {
   var gapScale = random([150, 200, 250, 300]);
   var gapRatio = random([0.35, 0.4, 0.45, 0.5]);
   var panScale = random([0, 1, 2, 5, 10, 15, 20, 25]);
-  var panRatio = random([0, 0, random([0, 5, 10, 15])]); //noprotect
+  var panRatio = random([0, 0, random([0, 5, 10, 15])]);
 
-  for (var x = 0; x <= width; x += span) {
-    if (noise(x / 2) < ignorePossibility) continue;
-    var skipRatio = features.shapeType == 'rect' ? -0.7 : -0.8; // if (features.shapeType == 'rect') {
-
-    if (sin(x + seed) < skipRatio) continue;
-    if (cos(x + seed * 2) < skipRatio) continue; // }
+  if (features.layout == "grid") {
     //noprotect
+    for (var _x = 0; _x <= width; _x += span) {
+      if (noise(_x / 2) < ignorePossibility) continue;
+      var skipRatio = features.shapeType == 'rect' ? -0.75 : -0.8; // if (features.shapeType == 'rect') {
 
-    for (var y = 0; y <= height; y += span) {
-      // if (noise(x,y)<ignorePossibility) continue
-      if (noise(x / gapScale, y / gapScale) <= gapRatio) continue;
+      if (sin(_x + seed * PI) < skipRatio) continue; // }
+      //noprotect
+
+      for (var _y = 0; _y <= height; _y += span) {
+        // if (cos(y + seed * 2 + PI) < skipRatio) continue
+        // if (noise(x,y)<ignorePossibility) continue
+        if (noise(_x / gapScale, _y / gapScale) <= gapRatio) continue;
+        particles.push(new Particle({
+          p: createVector(_x, _y),
+          r: noise(_x, _y) * maxSize * random(1),
+          color: random(colors)
+        }));
+
+        var _pairId = int(map(noise(_x / pairNoiseScale, _y / pairNoiseScale), 0, 1, minPairId, maxPairId));
+
+        span = spanOptions[_pairId];
+        maxSize = maxSizeOptions[_pairId];
+      }
+    }
+  } else if (features.layout == "ring") {
+    var minRingR = map(noise(seed), 0, 1, 0.25, 0.4) * width;
+    var maxRingR = map(noise(seed + 1), 0, 1, 0.5, 0.7) * width;
+
+    for (var ang = 0; ang <= 2 * PI; ang += 0.1) {
+      for (var r = minRingR; r < maxRingR; r += span) {
+        var _x2 = r * cos(ang) + width / 2;
+
+        var _y2 = r * sin(ang) + height / 2;
+
+        if (noise(_x2 / gapScale, _y2 / gapScale) <= gapRatio / 1.5) continue;
+        particles.push(new Particle({
+          p: createVector(_x2, _y2),
+          r: noise(_x2, _y2) * maxSize / 2 * random(1),
+          color: random(colors)
+        }));
+
+        var _pairId2 = int(map(noise(_x2 / pairNoiseScale, _y2 / pairNoiseScale), 0, 1, minPairId, maxPairId));
+
+        span = spanOptions[_pairId2];
+        maxSize = maxSizeOptions[_pairId2];
+      }
+    }
+
+    for (var i = 0; i < 50; i++) {
       particles.push(new Particle({
-        p: createVector(x, y),
-        r: noise(x, y) * maxSize * random(1),
+        p: createVector(width / 2 + random(-minRingR * 0.25, minRingR * 0.25), height / 2 + random(-minRingR * 0.25, minRingR * 0.25)),
+        r: random(minRingR / 1.9),
         color: random(colors)
       }));
+    }
+  } else if (features.layout == "blocks") {
+    var blockWidth = map(noise(seed), 0, 1, 0.1, 0.15) * width;
+    var blockHeight = map(noise(seed + 1), 0, 1, 0.3, 0.5) * height;
+    var useMaxSize = features.shapeType == 'rect' ? maxSize * 0.5 : features.shapeType == 'polygon' ? maxSize * 0.5 : maxSize;
 
-      var _pairId = int(map(noise(x / pairNoiseScale, y / pairNoiseScale), 0, 1, minPairId, maxPairId));
+    for (var pan = -1; pan <= 1; pan++) {
+      for (var x = -blockWidth; x < blockWidth; x += span) {
+        for (var y = -blockHeight; y < blockHeight; y += span) {
+          var xx = x + pan * blockWidth * 3 + width / 2;
+          var yy = y + pan * blockHeight / 2 + height / 2;
+          particles.push(new Particle({
+            p: createVector(xx, yy),
+            r: noise(x, y) * useMaxSize * random(1) * random(1),
+            color: random(colors)
+          }));
 
-      span = spanOptions[_pairId];
-      maxSize = maxSizeOptions[_pairId];
+          var _pairId3 = int(map(noise(x / pairNoiseScale, y / pairNoiseScale), 0, 1, minPairId, maxPairId));
+
+          span = spanOptions[_pairId3];
+          maxSize = maxSizeOptions[_pairId3];
+        }
+      }
     }
   } // particles.sort((a, b) => random() < 0.5)
 
 
-  for (var i = 0; i < features.wormholeCount; i++) {
+  for (var _i2 = 0; _i2 < features.wormholeCount; _i2++) {
     var w = new Wormhole({
       p: createVector(random(-width * 0.2, width * 1.2), random(-height * 0.2, height * 1.2)),
       r: random(100, 600),
@@ -605,9 +700,9 @@ function draw() {
         rotate(i / 3 * PI * 2);
         translate(-width / 2, -height / 2);
 
-        for (var _x = -gridSpan * 8; _x <= width + gridSpan * 4; _x += 50) {
+        for (var _x3 = -gridSpan * 8; _x3 <= width + gridSpan * 4; _x3 += 50) {
           stroke(255, 80);
-          line(_x, 0, _x, height + gridSpan * 10);
+          line(_x3, 0, _x3, height + gridSpan * 10);
         }
 
         pop();

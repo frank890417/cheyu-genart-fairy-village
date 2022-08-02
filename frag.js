@@ -27,15 +27,8 @@ const frag = `
 
 		// st.x+=pNoise(st*20.,5)*pNoise(st*10.+2.,10)/20.;
 		// st.y += pNoise(st * 20., 5) * pNoise(st * 10. + 2., 10) / 20.;
-		// st.x+=cnoise(vec3(st*400.,10.))/500.;
-		// st.y += cnoise(vec3(st * 400., 10.)) / 500.;
-
-		stBorder.x+=cnoise(vec3(st*1000.,100.))/500.;
-		stBorder.y+=cnoise(vec3(st*1000.,1000.))/500.; 
-		
-		stBorder.x+=cnoise(vec3(st*100.,100.))/500.;
-		stBorder.y+=cnoise(vec3(st*100.,1000.))/500.; 
-
+		 
+ 
 	
 		vec3 canvasOffset = texture2D(u_canvas_tex,st).rgb;
 		st.x+=0.35/255.- canvasOffset.r/255.*3. ;
@@ -81,7 +74,7 @@ const frag = `
 		|| (1.-stBorder.x)*u_resolution.x<borderWidth 
 		|| stBorder.y*u_resolution.y<borderWidth 
 		|| (1.-stBorder.y)*u_resolution.y<borderWidth;
-
+		// isBorder=false;
 
 		
 		vec4 result ;
