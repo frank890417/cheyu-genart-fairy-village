@@ -12,6 +12,7 @@ const frag = `
 	uniform sampler2D u_tex;
 	uniform sampler2D u_canvas_tex; 
 	uniform float u_distortFactor;
+	uniform bool u_hasBorder;
 
 	//attributes, in
 	varying vec4 var_centerGlPosition;
@@ -22,6 +23,7 @@ const frag = `
 
 	void main(){
 		vec2 st = var_vertTexCoord.xy /u_resolution.xy*u_resolution.y;
+		vec2 originalSt = st;
 		st.x*=u_resolution.x/u_resolution.y;
 		vec2 stBorder =st;
 
@@ -69,16 +71,32 @@ const frag = `
 		// texColor*=1.-d+0.3;
 		// gl_FragColor= vec4(color,1.0)+texColor2; 
 		
-		float borderWidth = 20.;
+		float borderWidth = 24.;
 		bool isBorder = stBorder.x*u_resolution.x<borderWidth
 		|| (1.-stBorder.x)*u_resolution.x<borderWidth 
 		|| stBorder.y*u_resolution.y<borderWidth 
 		|| (1.-stBorder.y)*u_resolution.y<borderWidth;
 		// isBorder=false;
-
+		if (!u_hasBorder){
+			isBorder=false;
+		}
+		float fade = 1.-distance(st,vec2(0.5))/5.;
 		
+		float modLen = 0.01;
+		vec2 modSt = mod(st, vec2(modLen, modLen));
+		vec2 stStroke = st - modSt;
+		
+		vec4 texColor4 = texture2D(u_tex,stStroke);
+		if (abs(modSt.x - modSt.y) > modLen/3.) {
+			texColor4 = vec4(255.);
+		}
+
 		vec4 result ;
 		result = texColor1 * 0.8 + (texColor1 * texColor2 / 1.9 + texColor1 / 4. + texColor2 / 4.) / 5. ;
+		// result = texColor4;
+		// result.r*=fade;
+		// result.g *= fade;
+		// result.b *= fade;
 		if ( isBorder){
 			result.rgb= vec3(u_bgColor);
 		} else {

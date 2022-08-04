@@ -52,12 +52,11 @@ var themes = [{
   colors: "0a369d-4472ca-5e7ce2-92b4f4-cfdee7-fff-000".split("-").map(function (a) {
     return "#" + a;
   })
-}, {
-  label: "HoneyMustard",
-  colors: "584d3d-9f956c-cbbf7a-f4e87c-ebf38b-fed766-fff-ffa856-000-e5dede".split("-").map(function (a) {
-    return "#" + a;
-  })
-}, {
+}, // {
+// 	label: "HoneyMustard",
+// 	colors: "584d3d-9f956c-cbbf7a-f4e87c-ebf38b-fed766-fff-ffa856-000-e5dede".split("-").map(a => "#" + a),
+// },
+{
   label: "Enchanted",
   colors: "e6e1c6-afac96-c0bda5-cc978e-f39c6b-f96a68-ff3864-261447-3a2958-fff".split("-").map(function (a) {
     return "#" + a;
@@ -70,6 +69,11 @@ var themes = [{
 }, {
   label: "fire",
   colors: "a20021-f52f57-f79d5c-f3752b-ededf4-000".split("-").map(function (a) {
+    return "#" + a;
+  })
+}, {
+  label: "",
+  colors: "ebe9e9-f3f8f2-3581b8-fcb07e-dee2d6-181175".split("-").map(function (a) {
     return "#" + a;
   })
 }]; // {
@@ -159,7 +163,12 @@ function () {
 
       var clr = color(this.color);
       g.fill(clr);
-      g.drawingContext.shadowColor = color(0, 4);
+      g.drawingContext.shadowColor = color(0, 6);
+      g.drawingContext.shadowOffsetY = 10;
+      g.drawingContext.shadowOffsetX = 10; // let dir = this.p.copy().sub(createVector(width / 2, height / 2)).heading()
+      // let shadowPanBase = 20
+      // g.drawingContext.shadowOffsetY = cos(dir) * shadowPanBase
+      // g.drawingContext.shadowOffsetX = sin(dir) * shadowPanBase
 
       if (features.style == "glow") {
         if (frameCount % 16 == 1) {
@@ -184,21 +193,43 @@ function () {
         }
       }
 
+      if (features.style == "pure") {
+        if (frameCount % 30 == 1) {
+          if (frameCount % 150 == 1 && this.r > 36) {
+            g.strokeWeight(3);
+          } else {
+            g.drawingContext.setLineDash([1.5, 3]);
+          } // if (frameCount == 1) {
+          // 	g.strokeWeight(20)
+          // }
+          // if (brightness(this.color) < 50) {
+          // 	g.stroke(255, 100)
+          // } else {
+
+
+          g.stroke(0, 200); // g.stroke(0, 60)
+          // }
+          // g.fill(255)
+        }
+      }
+
+      if (features.style == "pure") {
+        g.drawingContext.shadowColor = color(0, 7);
+      }
+
       g.translate(this.p.x, this.p.y); // g.scale(map(this.p.y, 0, height, 0, 2))
       // g.translate((this.p.x - width / 2) * map(this.p.y, 0, height, 0.5, 2) + width / 2, (this.p.y - width / 2) / 1.2 + width / 2)
 
       g.push();
 
       if (features.shapeType == "polygon") {
-        g.translate(0, -frameCount / 10);
+        g.translate(0, -frameCount / (6 + noise(10, seed) * 2));
         g.rotate(frameCount / 500);
 
         if (this.randomId % 40 == 0) {
           g.rotate(frameCount / 100 + this.randomId % 2);
-        }
+        } // g.drawingContext.shadowColor = color(0, 4)
 
-        g.drawingContext.shadowOffsetY = 10;
-        g.drawingContext.shadowOffsetX = 10; // g.drawingContext.shadowColor = color(0, 4)
 
         g.beginShape();
         var lines = [];
@@ -215,6 +246,37 @@ function () {
 
         g.endShape(CLOSE);
         lines.forEach(function (line) {
+          g.line(-_this.r / 5, 0, line[0], line[1]);
+        });
+      } else if (features.shapeType == "triangle") {
+        g.translate(0, -frameCount / (8 + noise(10, seed) * 2));
+        g.rotate(frameCount / 2000);
+
+        if (this.randomId % 40 == 0) {
+          g.rotate(frameCount / 1200 + this.randomId % 2);
+        }
+
+        g.drawingContext.shadowOffsetY = 10;
+        g.drawingContext.shadowOffsetX = 10;
+        g.drawingContext.shadowColor = color(0, 5);
+        g.beginShape();
+        var _lines = [];
+
+        for (var _i = 0; _i < 3; _i++) {
+          var _ang = _i / this.pointCount * 2 * PI;
+
+          var _rr = this.r * 1.25;
+
+          g.vertex(cos(_ang) * _rr, sin(_ang) * _rr);
+
+          if (this.randomId % 200 == 0) {
+            _lines.push([cos(_ang) * _rr, sin(_ang) * _rr]);
+          }
+        }
+
+        g.endShape(CLOSE);
+
+        _lines.forEach(function (line) {
           g.line(-_this.r / 5, 0, line[0], line[1]);
         });
       } else if (features.shapeType == "rect") {
@@ -281,7 +343,7 @@ function () {
           g.pop();
         }
 
-        g.translate(0, -frameCount / 50);
+        g.translate(0, -frameCount / (30 + noise(10, this.randomId) * 20));
         g.drawingContext.shadowOffsetY = 10;
         g.drawingContext.shadowOffsetX = 10;
         g.ellipse(0, 0, this.r, this.r);
@@ -361,7 +423,7 @@ function () {
     value: function update() {
       var _this2 = this;
 
-      if (this.randomId % 1 == 0 && abs(brightness(color(this.altColor)) - brightness(color(this.color))) < 80) {
+      if (this.randomId % 1 == 0 && abs(brightness(color(this.altColor)) - brightness(color(this.color))) < 85) {
         this.color = lerpColor(color(this.color), color(this.altColor), 0.005);
       }
 
@@ -379,7 +441,7 @@ function () {
 
       this.p.add(this.v);
       this.v.add(this.a);
-      this.r *= this.shrinkRatio; // this.shrinkRatio += noise(this.r, this.randomId) * sin(frameCount / 5) / 2000
+      this.r *= this.shrinkRatio;
 
       if (this.r < 0.1) {
         this.alive = false;
@@ -389,7 +451,7 @@ function () {
         this.alive = false;
       }
 
-      if (random() < 0.25 && frameCount % 30 == 0 && this.randomId % 5 == 0) {
+      if (features.style != 'pure' && random() < 0.25 && frameCount % features.colorChangeFramSpan == 0 && this.randomId % 5 == 0) {
         this.color = random(colors);
         this.color2 = lerpColor(color(random(colors)), color(this.color), 0.6);
       }
@@ -427,11 +489,11 @@ function () {
       //quantize angle
 
       if (noise(this.p.x / 60, this.p.y / 60) < 0.2) {
-        var _ang = atan2(this.v.x, this.v.y);
+        var _ang2 = atan2(this.v.x, this.v.y);
 
         var amp = this.v.mag();
         var angStepCount = 8;
-        var newAng = int(_ang / 2 / PI * angStepCount) / angStepCount * 2 * PI;
+        var newAng = int(_ang2 / 2 / PI * angStepCount) / angStepCount * 2 * PI;
         this.v.x = amp * cos(newAng);
         this.v.y = amp * sin(newAng);
       }
@@ -439,12 +501,16 @@ function () {
       if (features.shapeType == 'polygon') {
         if (frameCount % 100 == 0 && this.r >= 200) {
           for (var i = 0; i < this.pointCount; i++) {
-            var _ang2 = i / this.pointCount * 2 * PI;
+            var _ang3 = i / this.pointCount * 2 * PI;
 
-            var xx = this.r * cos(_ang2) / 2;
-            var yy = this.r * sin(_ang2) / 2;
+            var xx = this.r * cos(_ang3) / 2;
+            var yy = this.r * sin(_ang3) / 2;
           }
         }
+      }
+
+      if (features.style == 'pure') {
+        this.color = colors[2];
       }
     }
   }]);
@@ -468,6 +534,9 @@ function preload() {
   theShaderTexture = new p5.Shader(this.renderer, vert, frag_texture);
   features = calFeatures();
   colors = random(themes).colors;
+  colors = colors.sort(function (a, b) {
+    return random([-0.5, 0.5]);
+  });
   sortedColors = colors.sort(function (a, b) {
     return brightness(color(b)) - brightness(color(a));
   });
@@ -499,8 +568,8 @@ function setup() {
   var ra = random([-0.2, -0.1, 0.1, 0.2]);
   var rscale = random([1.05, 1.1, 1.15, 1.2]);
 
-  for (var _i = 0, _arr = [originalGraphics, overlayGraphics]; _i < _arr.length; _i++) {
-    var g = _arr[_i];
+  for (var _i2 = 0, _arr = [originalGraphics, overlayGraphics]; _i2 < _arr.length; _i2++) {
+    var g = _arr[_i2];
     // console.log(g)
     g.translate(rx, ry);
     g.translate(width / 2, height / 2);
@@ -516,8 +585,16 @@ function setup() {
 
   bgColor = color(random(colors));
 
+  if (random() < 0.5) {
+    bgColor = color(random([sortedColors[0], sortedColors.slice(-1)[0]]));
+  }
+
   if (features.style == "glow") {
     bgColor = color(0);
+  }
+
+  if (features.style == "pure") {
+    bgColor = color(colors[2]);
   }
 
   var pairId = int(random(7));
@@ -550,7 +627,7 @@ function setup() {
         particles.push(new Particle({
           p: createVector(_x, _y),
           r: noise(_x, _y) * maxSize * random(1),
-          color: random(colors)
+          color: colors[int(noise(_x / gapScale, _y / gapScale) * colors.length * 2) % colors.length]
         }));
 
         var _pairId = int(map(noise(_x / pairNoiseScale, _y / pairNoiseScale), 0, 1, minPairId, maxPairId));
@@ -572,8 +649,8 @@ function setup() {
         if (noise(_x2 / gapScale, _y2 / gapScale) <= gapRatio / 1.5) continue;
         particles.push(new Particle({
           p: createVector(_x2, _y2),
-          r: noise(_x2, _y2) * maxSize / 2 * random(1),
-          color: random(colors)
+          r: noise(_x2, _y2) * maxSize / 1.5 * random(1),
+          color: colors[int(noise(r / gapScale, ang / gapScale) * colors.length * 2) % colors.length]
         }));
 
         var _pairId2 = int(map(noise(_x2 / pairNoiseScale, _y2 / pairNoiseScale), 0, 1, minPairId, maxPairId));
@@ -593,7 +670,7 @@ function setup() {
   } else if (features.layout == "blocks") {
     var blockWidth = map(noise(seed), 0, 1, 0.1, 0.15) * width;
     var blockHeight = map(noise(seed + 1), 0, 1, 0.3, 0.5) * height;
-    var useMaxSize = features.shapeType == 'rect' ? maxSize * 0.5 : features.shapeType == 'polygon' ? maxSize * 0.5 : maxSize;
+    var useMaxSize = features.shapeType == 'rect' ? maxSize * 1 : features.shapeType == 'polygon' ? maxSize * 1 : maxSize;
 
     for (var pan = -1; pan <= 1; pan++) {
       for (var x = -blockWidth; x < blockWidth; x += span) {
@@ -603,7 +680,7 @@ function setup() {
           particles.push(new Particle({
             p: createVector(xx, yy),
             r: noise(x, y) * useMaxSize * random(1) * random(1),
-            color: random(colors)
+            color: colors[int(noise(xx / gapScale, yy / gapScale) * colors.length * 2) % colors.length]
           }));
 
           var _pairId3 = int(map(noise(x / pairNoiseScale, y / pairNoiseScale), 0, 1, minPairId, maxPairId));
@@ -613,10 +690,72 @@ function setup() {
         }
       }
     }
+  } else if (features.layout == "spiral") {
+    var sprialScale = map(noise(seed * 5), 0, 1, 0.65, 1.05);
+
+    var _blockWidth = map(noise(seed), 0, 1, 0.1, 0.15) * width;
+
+    var _blockHeight = map(noise(seed + 1), 0, 1, 0.3, 0.5) * height;
+
+    var _useMaxSize = features.shapeType == 'rect' ? maxSize * 1.2 : features.shapeType == 'polygon' ? maxSize * 1.25 : maxSize * 1.25;
+
+    var _pan = 0;
+
+    for (var _r = 0; _r < width * 0.6; _r += span / 2) {
+      for (var _ang4 = 0; _ang4 <= PI * 0.15; _ang4 += 0.05) {
+        var useR = sprialScale * (_r + noise(_ang4 * 500) * _r * 0.6 + map(_ang4, PI / 2, PI, 0, 1, true) * noise(_r * 100) * width / 1.2);
+
+        var _xx = useR * cos(_ang4 + _pan * PI + _r / 40) + width / 2;
+
+        var _yy = useR * sin(_ang4 + _pan * PI + _r / 40) + height / 2;
+
+        particles.push(new Particle({
+          p: createVector(_xx, _yy),
+          r: noise(_r / 4, _ang4 / 4) * _useMaxSize * random(1) * random(1),
+          color: colors[int(noise(_r / gapScale, _ang4 / gapScale) * colors.length * 2) % colors.length]
+        }));
+
+        var _pairId4 = int(map(noise(x / pairNoiseScale, y / pairNoiseScale), 0, 1, minPairId, maxPairId));
+
+        span = spanOptions[_pairId4];
+        maxSize = maxSizeOptions[_pairId4];
+      }
+    } // }
+
+  } else if (features.layout == "chess") {
+    var chessPan = random([0, 1]); //noprotect
+
+    for (var _x3 = 0; _x3 <= width; _x3 += span) {
+      if (noise(_x3 / 2) < ignorePossibility) continue;
+
+      var _skipRatio = features.shapeType == 'rect' ? -0.75 : -0.8; // if (features.shapeType == 'rect') { 
+      // }
+      //noprotect
+
+
+      for (var _y3 = 0; _y3 <= height; _y3 += span) {
+        // if (cos(y + seed * 2 + PI) < skipRatio) continue
+        var chessCount = random([2, 3]);
+        var chessX = int(_x3 / (width / chessCount));
+        var chessY = int(_y3 / (height / chessCount));
+        if ((chessX + chessY + chessPan) % 2 == 1) continue;
+        if (noise(_x3, _y3) < ignorePossibility) continue;
+        particles.push(new Particle({
+          p: createVector(_x3, _y3),
+          r: (0.5 + noise(_x3, _y3) / 2) * maxSize / 2 * random(1),
+          color: colors[max(int(chessX + chessY + noise(_x3 / gapRatio, _y3 / gapRatio) * 5), 0) % colors.length]
+        }));
+
+        var _pairId5 = int(map(noise(_x3 / pairNoiseScale, _y3 / pairNoiseScale), 0, 1, minPairId, maxPairId));
+
+        span = spanOptions[_pairId5];
+        maxSize = maxSizeOptions[_pairId5];
+      }
+    }
   } // particles.sort((a, b) => random() < 0.5)
 
 
-  for (var _i2 = 0; _i2 < features.wormholeCount; _i2++) {
+  for (var _i3 = 0; _i3 < features.wormholeCount; _i3++) {
     var w = new Wormhole({
       p: createVector(random(-width * 0.2, width * 1.2), random(-height * 0.2, height * 1.2)),
       r: random(100, 600),
@@ -632,7 +771,11 @@ function setup() {
     // overlayGraphics.line(-10,10,10,-10)
     // overlayGraphics.pop()
     // originalGraphics.ellipse(w.p.x,w.p.y,50,50)	
-  }
+  } // particles.forEach(p => {
+  // 	p.color = bgColor
+  // 	// p.color2 = bgColor
+  // })
+
 }
 
 function draw() {
@@ -645,6 +788,7 @@ function draw() {
   theShader.setUniform('u_bgColor', [bgColor._getRed() / 255., bgColor._getGreen() / 255., bgColor._getBlue() / 255.]);
   theShader.setUniform('u_canvas_tex', overallTexture);
   theShader.setUniform('u_distortFactor', features.distortFactor);
+  theShader.setUniform('u_hasBorder', features.hasBorder);
   webGLCanvas.clear(); // webGLCanvas.background(bgColor)
 
   background(100);
@@ -712,9 +856,9 @@ function draw() {
         rotate(i / 3 * PI * 2);
         translate(-width / 2, -height / 2);
 
-        for (var _x3 = -gridSpan * 8; _x3 <= width + gridSpan * 4; _x3 += 50) {
+        for (var _x4 = -gridSpan * 8; _x4 <= width + gridSpan * 4; _x4 += 50) {
           stroke(255, 80);
-          line(_x3, 0, _x3, height + gridSpan * 10);
+          line(_x4, 0, _x4, height + gridSpan * 10);
         }
 
         pop();
@@ -772,4 +916,14 @@ function draw() {
   // 	image(overlayGraphics, 0, 0)
   // 	pop()
   // }
+}
+
+function keyPressed() {
+  if (key == 's') {
+    saveCanvas('test', 'png');
+  }
+
+  if (key == 'b') {
+    features.hasBorder = !features.hasBorder;
+  }
 }

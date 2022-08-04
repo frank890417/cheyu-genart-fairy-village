@@ -45,10 +45,10 @@ let themes = [{
 		colors: "0a369d-4472ca-5e7ce2-92b4f4-cfdee7-fff-000".split("-").map(a => "#" + a),
 	},
 
-	{
-		label: "HoneyMustard",
-		colors: "584d3d-9f956c-cbbf7a-f4e87c-ebf38b-fed766-fff-ffa856-000-e5dede".split("-").map(a => "#" + a),
-	},
+	// {
+	// 	label: "HoneyMustard",
+	// 	colors: "584d3d-9f956c-cbbf7a-f4e87c-ebf38b-fed766-fff-ffa856-000-e5dede".split("-").map(a => "#" + a),
+	// },
 
 	{
 		label: "Enchanted",
@@ -62,6 +62,10 @@ let themes = [{
 	{
 		label: "fire",
 		colors: "a20021-f52f57-f79d5c-f3752b-ededf4-000".split("-").map(a => "#" + a)
+	},
+	{
+		label: "",
+		colors: "ebe9e9-f3f8f2-3581b8-fcb07e-dee2d6-181175".split("-").map(a => "#" + a)
 	}
 ]
 
@@ -139,7 +143,13 @@ class Particle {
 		// g.blendMode(MULTIPLY)
 		let clr = color(this.color)
 		g.fill(clr)
-		g.drawingContext.shadowColor = color(0, 4)
+		g.drawingContext.shadowColor = color(0, 6)
+		g.drawingContext.shadowOffsetY = 10
+		g.drawingContext.shadowOffsetX = 10
+		// let dir = this.p.copy().sub(createVector(width / 2, height / 2)).heading()
+		// let shadowPanBase = 20
+		// g.drawingContext.shadowOffsetY = cos(dir) * shadowPanBase
+		// g.drawingContext.shadowOffsetX = sin(dir) * shadowPanBase
 
 		if (features.style == "glow") {
 			if (frameCount % 16 == 1) {
@@ -163,6 +173,31 @@ class Particle {
 				g.noStroke()
 			}
 		}
+		if (features.style == "pure") {
+			if (frameCount % 30 == 1) {
+				if (frameCount % 150 == 1 && this.r > 36) {
+					g.strokeWeight(3)
+				} else {
+					g.drawingContext.setLineDash([1.5, 3])
+				}
+				// if (frameCount == 1) {
+				// 	g.strokeWeight(20)
+				// }
+				// if (brightness(this.color) < 50) {
+				// 	g.stroke(255, 100)
+				// } else {
+				g.stroke(0, 200)
+				// g.stroke(0, 60)
+				// }
+
+				// g.fill(255)
+
+			}
+
+		}
+		if (features.style == "pure") {
+			g.drawingContext.shadowColor = color(0, 7)
+		}
 
 		g.translate(this.p.x, this.p.y)
 		// g.scale(map(this.p.y, 0, height, 0, 2))
@@ -174,20 +209,45 @@ class Particle {
 
 		if (features.shapeType == "polygon") {
 
-
-			g.translate(0, -frameCount / 10)
+			g.translate(0, -frameCount / (6 + noise(10, seed) * 2))
 			g.rotate(frameCount / 500)
 			if (this.randomId % 40 == 0) {
 				g.rotate(frameCount / 100 + this.randomId % 2)
 			}
-			g.drawingContext.shadowOffsetY = 10
-			g.drawingContext.shadowOffsetX = 10
 			// g.drawingContext.shadowColor = color(0, 4)
 			g.beginShape()
 			let lines = []
 			for (let i = 0; i < this.pointCount; i++) {
 				let ang = i / this.pointCount * 2 * PI
 				let rr = this.r * 0.8
+				g.vertex(cos(ang) * rr, sin(ang) * rr)
+				if (this.randomId % 200 == 0) {
+					lines.push([cos(ang) * rr, sin(ang) * rr])
+				}
+			}
+			g.endShape(CLOSE)
+
+			lines.forEach(line => {
+				g.line(-this.r / 5, 0, line[0], line[1])
+			})
+
+
+		} else if (features.shapeType == "triangle") {
+
+
+			g.translate(0, -frameCount / (8 + noise(10, seed) * 2))
+			g.rotate(frameCount / 2000)
+			if (this.randomId % 40 == 0) {
+				g.rotate(frameCount / 1200 + this.randomId % 2)
+			}
+			g.drawingContext.shadowOffsetY = 10
+			g.drawingContext.shadowOffsetX = 10
+			g.drawingContext.shadowColor = color(0, 5)
+			g.beginShape()
+			let lines = []
+			for (let i = 0; i < 3; i++) {
+				let ang = i / this.pointCount * 2 * PI
+				let rr = this.r * 1.25
 				g.vertex(cos(ang) * rr, sin(ang) * rr)
 				if (this.randomId % 200 == 0) {
 					lines.push([cos(ang) * rr, sin(ang) * rr])
@@ -265,7 +325,7 @@ class Particle {
 
 				g.pop()
 			}
-			g.translate(0, -frameCount / 50)
+			g.translate(0, -frameCount / (30 + noise(10, this.randomId) * 20))
 			g.drawingContext.shadowOffsetY = 10
 			g.drawingContext.shadowOffsetX = 10
 			g.ellipse(0, 0, this.r, this.r)
@@ -351,7 +411,7 @@ class Particle {
 
 	}
 	update() {
-		if (this.randomId % 1 == 0 && abs(brightness(color(this.altColor)) - brightness(color(this.color))) < 80) {
+		if (this.randomId % 1 == 0 && abs(brightness(color(this.altColor)) - brightness(color(this.color))) < 85) {
 			this.color = lerpColor(color(this.color), color(this.altColor), 0.005)
 		}
 		if (this.randomId % 40 == 0 && frameCount % 50 == 0) {
@@ -367,7 +427,6 @@ class Particle {
 		this.p.add(this.v)
 		this.v.add(this.a)
 		this.r *= this.shrinkRatio
-		// this.shrinkRatio += noise(this.r, this.randomId) * sin(frameCount / 5) / 2000
 
 
 		if (this.r < 0.1) {
@@ -376,7 +435,8 @@ class Particle {
 		if (frameCount > 650 && random() < 0.04 && this.randomId % 6 <= 3) {
 			this.alive = false
 		}
-		if (random() < 0.25 && frameCount % 30 == 0 && this.randomId % 5 == 0) {
+		if (features.style != 'pure' &&
+			random() < 0.25 && frameCount % features.colorChangeFramSpan == 0 && this.randomId % 5 == 0) {
 			this.color = random(colors)
 			this.color2 = lerpColor(color(random(colors)), color(this.color), 0.6)
 		}
@@ -443,6 +503,10 @@ class Particle {
 			}
 		}
 
+		if (features.style == 'pure') {
+			this.color = colors[2]
+		}
+
 
 	}
 
@@ -466,6 +530,8 @@ function preload() {
 
 	features = calFeatures()
 	colors = random(themes).colors
+
+	colors = colors.sort((a, b) => random([-0.5, 0.5]))
 	sortedColors = colors.sort((a, b) => brightness(color(b)) - brightness(color(a)))
 	console.log(features)
 }
@@ -520,9 +586,16 @@ function setup() {
 
 	// bgColor = color(20)
 	bgColor = color(random(colors))
+	if (random() < 0.5) {
+		bgColor = color(random([sortedColors[0], sortedColors.slice(-1)[0]]))
+	}
 	if (features.style == "glow") {
 		bgColor = color(0)
 	}
+	if (features.style == "pure") {
+		bgColor = color(colors[2])
+	}
+
 
 	let pairId = int(random(7))
 
@@ -560,7 +633,7 @@ function setup() {
 				particles.push(new Particle({
 					p: createVector(x, y),
 					r: noise(x, y) * maxSize * random(1),
-					color: random(colors)
+					color: colors[int(noise(x / gapScale, y / gapScale) * colors.length * 2) % colors.length],
 				}))
 
 				let pairId = int(map(noise(x / pairNoiseScale, y / pairNoiseScale), 0, 1, minPairId, maxPairId))
@@ -579,8 +652,8 @@ function setup() {
 				if (noise(x / gapScale, y / gapScale) <= gapRatio / 1.5) continue
 				particles.push(new Particle({
 					p: createVector(x, y),
-					r: noise(x, y) * maxSize / 2 * random(1),
-					color: random(colors)
+					r: noise(x, y) * maxSize / 1.5 * random(1),
+					color: colors[int(noise(r / gapScale, ang / gapScale) * colors.length * 2) % colors.length],
 				}))
 				let pairId = int(map(noise(x / pairNoiseScale, y / pairNoiseScale), 0, 1, minPairId, maxPairId))
 				span = spanOptions[pairId]
@@ -598,7 +671,7 @@ function setup() {
 	} else if (features.layout == "blocks") {
 		let blockWidth = map(noise(seed), 0, 1, 0.1, 0.15) * width
 		let blockHeight = map(noise(seed + 1), 0, 1, 0.3, 0.5) * height
-		let useMaxSize = features.shapeType == 'rect' ? (maxSize * 0.5) : features.shapeType == 'polygon' ? (maxSize * 0.5) : maxSize
+		let useMaxSize = features.shapeType == 'rect' ? (maxSize * 1) : features.shapeType == 'polygon' ? (maxSize * 1) : maxSize
 		for (let pan = -1; pan <= 1; pan++) {
 			for (var x = -blockWidth; x < blockWidth; x += span) {
 				for (var y = -blockHeight; y < blockHeight; y += span) {
@@ -607,13 +680,64 @@ function setup() {
 					particles.push(new Particle({
 						p: createVector(xx, yy),
 						r: noise(x, y) * useMaxSize * random(1) * random(1),
-						color: random(colors)
+						color: colors[int(noise(xx / gapScale, yy / gapScale) * colors.length * 2) % colors.length],
 					}))
 					let pairId = int(map(noise(x / pairNoiseScale, y / pairNoiseScale), 0, 1, minPairId, maxPairId))
 					span = spanOptions[pairId]
 					maxSize = maxSizeOptions[pairId]
 				}
 
+			}
+		}
+	} else if (features.layout == "spiral") {
+		let sprialScale = map(noise(seed * 5), 0, 1, 0.65, 1.05)
+		let blockWidth = map(noise(seed), 0, 1, 0.1, 0.15) * width
+		let blockHeight = map(noise(seed + 1), 0, 1, 0.3, 0.5) * height
+		let useMaxSize = features.shapeType == 'rect' ? (maxSize * 1.2) : features.shapeType == 'polygon' ? (maxSize * 1.25) : maxSize * 1.25
+
+		let pan = 0
+		for (let r = 0; r < width * 0.6; r += span / 2) {
+			for (let ang = 0; ang <= PI * 0.15; ang += 0.05) {
+				let useR = sprialScale * (r + noise(ang * 500) * r * 0.6 + map(ang, PI / 2, PI, 0, 1, true) * noise(r * 100) * width / 1.2)
+				let xx = useR * cos(ang + pan * PI + r / 40) + width / 2
+				let yy = useR * sin(ang + pan * PI + r / 40) + height / 2
+				particles.push(new Particle({
+					p: createVector(xx, yy),
+					r: noise(r / 4, ang / 4) * useMaxSize * random(1) * random(1),
+					color: colors[int(noise(r / gapScale, ang / gapScale) * colors.length * 2) % colors.length],
+				}))
+				let pairId = int(map(noise(x / pairNoiseScale, y / pairNoiseScale), 0, 1, minPairId, maxPairId))
+				span = spanOptions[pairId]
+				maxSize = maxSizeOptions[pairId]
+			}
+		}
+
+		// }
+	} else if (features.layout == "chess") {
+		let chessPan = random([0, 1])
+		//noprotect
+		for (let x = 0; x <= width; x += span) {
+			if (noise(x / 2) < ignorePossibility) continue
+			let skipRatio = features.shapeType == 'rect' ? -0.75 : -0.8
+			// if (features.shapeType == 'rect') { 
+			// }
+			//noprotect
+			for (let y = 0; y <= height; y += span) {
+				// if (cos(y + seed * 2 + PI) < skipRatio) continue
+				let chessCount = random([2, 3])
+				let chessX = int(x / (width / chessCount))
+				let chessY = int(y / (height / chessCount))
+				if ((chessX + chessY + chessPan) % 2 == 1) continue
+				if (noise(x, y) < ignorePossibility) continue
+				particles.push(new Particle({
+					p: createVector(x, y),
+					r: (0.5 + noise(x, y) / 2) * maxSize / 2 * random(1),
+					color: colors[max(int(chessX + chessY + noise(x / gapRatio, y / gapRatio) * 5), 0) % colors.length]
+				}))
+
+				let pairId = int(map(noise(x / pairNoiseScale, y / pairNoiseScale), 0, 1, minPairId, maxPairId))
+				span = spanOptions[pairId]
+				maxSize = maxSizeOptions[pairId]
 			}
 		}
 	}
@@ -637,6 +761,12 @@ function setup() {
 		// overlayGraphics.pop()
 		// originalGraphics.ellipse(w.p.x,w.p.y,50,50)	
 	}
+
+
+	// particles.forEach(p => {
+	// 	p.color = bgColor
+	// 	// p.color2 = bgColor
+	// })
 }
 
 
@@ -651,7 +781,7 @@ function draw() {
 	theShader.setUniform('u_bgColor', [bgColor._getRed() / 255., bgColor._getGreen() / 255., bgColor._getBlue() / 255.])
 	theShader.setUniform('u_canvas_tex', overallTexture)
 	theShader.setUniform('u_distortFactor', features.distortFactor)
-
+	theShader.setUniform('u_hasBorder', features.hasBorder)
 	webGLCanvas.clear()
 
 
@@ -792,4 +922,14 @@ function draw() {
 	// 	image(overlayGraphics, 0, 0)
 	// 	pop()
 	// }
+}
+
+function keyPressed() {
+	if (key == 's') {
+		saveCanvas('test', 'png')
+	}
+	if (key == 'b') {
+		features.hasBorder = !features.hasBorder
+	}
+
 }
