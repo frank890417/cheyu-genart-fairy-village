@@ -3,7 +3,7 @@ function calFeatures() {
   features.style = random({
     normal: 5,
     glow: 1,
-    pure: 100
+    pure: 1
     // stroke: 1000
   })
   // features.style=random()<1?'stroke':'normal'
