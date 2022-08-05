@@ -150,6 +150,7 @@ function () {
       xSpeedFactor: random([6, 8, 10, 12]),
       ySpeedFactor: random([6, 8, 10, 12])
     };
+    def.maxR = def.r;
     Object.assign(def, args);
     Object.assign(this, def);
   }
@@ -157,8 +158,8 @@ function () {
   _createClass(Particle, [{
     key: "draw",
     value: function draw(g) {
-      var _this = this;
-
+      var useR = this.r;
+      if (useR < 0) return;
       g.push(); // g.blendMode(MULTIPLY)
 
       var clr = color(this.color);
@@ -172,7 +173,7 @@ function () {
 
       if (features.style == "glow") {
         if (frameCount % 16 == 1) {
-          if (this.randomId % 500 != 0 || this.r > 50) {
+          if (this.randomId % 500 != 0 || useR > 50) {
             g.fill(bgColor);
           } else {
             clr.setAlpha(50);
@@ -181,7 +182,7 @@ function () {
           }
 
           g.strokeWeight(2);
-          if (frameCount == 1) g.strokeWeight(3);
+          if (frameCount == 1) g.strokeWeight(4);
           g.stroke(clr);
           var fogColor = color(this.color);
           fogColor.setAlpha(50);
@@ -195,14 +196,15 @@ function () {
 
       if (features.style == "pure") {
         if (frameCount % 30 == 1) {
-          if (frameCount % 150 == 1 && this.r > 36) {
+          if (frameCount % 150 == 1 && useR > 36) {
             g.strokeWeight(3);
           } else {
             g.drawingContext.setLineDash([1.5, 3]);
-          } // if (frameCount == 1) {
-          // 	g.strokeWeight(20)
-          // }
-          // if (brightness(this.color) < 50) {
+          }
+
+          if (frameCount == 1) {
+            g.strokeWeight(8);
+          } // if (brightness(this.color) < 50) {
           // 	g.stroke(255, 100)
           // } else {
 
@@ -215,6 +217,10 @@ function () {
 
       if (features.style == "pure") {
         g.drawingContext.shadowColor = color(0, 7);
+      }
+
+      if (features.style == "squiggle") {
+        g.drawingContext.shadowColor = color(0, 20);
       }
 
       g.translate(this.p.x, this.p.y); // g.scale(map(this.p.y, 0, height, 0, 2))
@@ -236,7 +242,7 @@ function () {
 
         for (var i = 0; i < this.pointCount; i++) {
           var ang = i / this.pointCount * 2 * PI;
-          var rr = this.r * 0.8;
+          var rr = useR * 0.8;
           g.vertex(cos(ang) * rr, sin(ang) * rr);
 
           if (this.randomId % 200 == 0) {
@@ -246,7 +252,7 @@ function () {
 
         g.endShape(CLOSE);
         lines.forEach(function (line) {
-          g.line(-_this.r / 5, 0, line[0], line[1]);
+          g.line(-useR / 5, 0, line[0], line[1]);
         });
       } else if (features.shapeType == "triangle") {
         g.translate(0, -frameCount / (8 + noise(10, seed) * 2));
@@ -265,7 +271,7 @@ function () {
         for (var _i = 0; _i < 3; _i++) {
           var _ang = _i / this.pointCount * 2 * PI;
 
-          var _rr = this.r * 1.25;
+          var _rr = useR * 1.25;
 
           g.vertex(cos(_ang) * _rr, sin(_ang) * _rr);
 
@@ -277,56 +283,61 @@ function () {
         g.endShape(CLOSE);
 
         _lines.forEach(function (line) {
-          g.line(-_this.r / 5, 0, line[0], line[1]);
+          g.line(-useR / 5, 0, line[0], line[1]);
         });
-      } else if (features.shapeType == "rect") {
+      } else if (features.shapeType == "rect" || features.shapeType == "squiggle") {
         g.translate(frameCount / 20, frameCount / 20);
+        var rd = [0, 0, 0, 0];
+
+        if (features.shapeType == "squiggle") {
+          rd = [int(noise(this.randomId) * useR), int(noise(this.randomId * 2) * useR), int(noise(this.randomId * 3) * useR), int(noise(this.randomId * 4) * useR)];
+        }
+
+        if (features.shapeType == "squiggle") {
+          g.rotate(map(noise(this.randomId * 10), 0, 1, -3, 3) * frameCount / (30 + 100 * noise(this.p.x / 100, this.p.y / 100)) + noise(this.randomId));
+        }
 
         if (frameCount == 1) {
           g.push();
           g.stroke(this.color);
           g.fill(bgColor);
           g.strokeWeight(2);
-          g.rect(0, 0, this.r * 1.1 * 1., this.r * 1.1 * 1.);
+          g.rect(0, 0, useR * 1.1 * 1., useR * 1.1 * 1., rd[0], rd[1], rd[2], rd[3]);
           g.pop();
-        } // g.translate(-this.r / 3, -this.r / 3)
-        // if (this.randomId % 5 == 0) {
-        // 	g.drawingContext.setLineDash([20, 20])
-        // 	g.strokeWeight(5)
-        // 	g.stroke(this.color)
-        // }
-
+        }
 
         g.drawingContext.shadowOffsetY = 10;
         g.drawingContext.shadowOffsetX = 10;
 
         if (this.randomId % 3 == 0 && frameCount > 400 + noise(this.randomId * 5) * 300) {
-          g.rect(0, 0, this.r / 3, this.r / 3);
-          g.rect(this.r * 2 / 3, 0, this.r / 3, this.r / 3);
-          g.rect(0, this.r * 2 / 3, this.r / 3, this.r / 3);
-          g.rect(this.r * 2 / 3, this.r * 2 / 3, this.r / 3, this.r / 3);
+          g.rect(0, 0, useR / 3, useR / 3);
+          g.rect(useR * 2 / 3, 0, useR / 3, useR / 3);
+          g.rect(0, useR * 2 / 3, useR / 3, useR / 3);
+          g.rect(useR * 2 / 3, useR * 2 / 3, useR / 3, useR / 3);
         } else {
-          g.rect(0, 0, this.r * 1., this.r * 1.);
+          g.rect(0, 0, useR * 1., useR * 1., rd[0], rd[1], rd[2], rd[3]);
         }
 
         if (this.randomId % 80 == 0) {
-          g.line(0, 0, this.r, this.r);
-          g.line(0, this.r, this.r, 0);
+          g.line(0, 0, useR, useR);
+          g.line(0, useR, useR, 0);
         }
 
         if (frameCount % 80 == 1 && this.randomId % 3 == 0) {
-          for (var y = 0; y < this.r - 15; y += 10) {
+          g.strokeWeight(1);
+
+          for (var y = 0; y < useR - 15; y += 10) {
             g.push();
-            g.translate(this.r, y + 10);
+            g.translate(useR, y + 10);
             g.rotate(-PI / 4);
             g.fill(this.color);
             g.ellipse(0, 0, 1, y % 100 == 0 ? 20 : 5);
             g.pop();
           }
 
-          for (var x = 0; x < this.r; x += 10) {
+          for (var x = 0; x < useR; x += 10) {
             g.push();
-            g.translate(x, this.r);
+            g.translate(x, useR);
             g.rotate(-PI / 4);
             g.fill(this.color);
             g.rect(0, 0, 1, x % 100 == 0 ? 20 : 5);
@@ -339,30 +350,22 @@ function () {
           g.stroke(this.color);
           g.fill(bgColor);
           g.strokeWeight(2);
-          g.ellipse(0, 0, this.r, this.r);
+          g.ellipse(0, 0, useR, useR);
           g.pop();
         }
 
         g.translate(0, -frameCount / (30 + noise(10, this.randomId) * 20));
         g.drawingContext.shadowOffsetY = 10;
         g.drawingContext.shadowOffsetX = 10;
-        g.ellipse(0, 0, this.r, this.r);
+        g.ellipse(0, 0, useR, useR);
       }
 
-      g.pop(); // if (noise(this.p.x/300,this.p.y/300)<0.3 && random()<0.02){
-      // 	overlayGraphics.push()
-      // 		overlayGraphics.noStroke()
-      // 		overlayGraphics.fill(clr)
-      // 		overlayGraphics.rect(this.p.x+random(-this.r,this.r),this.p.y+random(-this.r,this.r),20,-20,10)
-      // 	overlayGraphics.pop()
-      // } 
-      // g.ellipse(this.r*2+10,0,3,3)
-      //grass
+      g.pop(); //grass
 
-      if (this.randomId % 50 == 0 && frameCount % 120 == 0 && this.r > 2) {
+      if (this.randomId % 50 == 0 && frameCount % 120 == 0 && useR > 2) {
         // g.fill(bgColor)
         g.push();
-        g.translate(this.r + 20, 0);
+        g.translate(useR + 20, 0);
         g.stroke(this.color2);
         g.translate(0, random([-this.r, this.r]));
         g.line(0, 0, 0, -5);
@@ -377,51 +380,37 @@ function () {
 
       if (this.randomId % verticalLineSpan == 0) {
         g.fill(0);
-        g.ellipse(0, this.r + 10, 2, 2);
+        g.ellipse(0, useR + 10, 2, 2);
       }
 
       if (this.randomId % 25 == 0) {
         g.fill(bgColor);
-        g.ellipse(this.r / 2, 0, 2, 2);
+        g.ellipse(useR / 2, 0, 2, 2);
       }
 
       if (this.randomId % 80 == 0) {
         g.fill(255);
         var whiteR = noise(this.randomId, this.p.x / 40, this.p.y / 40) * 2 + 1;
-        g.ellipse(-this.r - 10, this.r + 10, whiteR, whiteR);
+        g.ellipse(-useR - 10, useR + 10, whiteR, whiteR);
       }
 
-      if (this.r > 10 && (this.randomId + frameCount) % 60 == 0 && this.randomId % 4 == 0) {
+      if (useR > 10 && (this.randomId + frameCount) % 60 == 0 && this.randomId % 4 == 0) {
         g.fill(this.color2);
         g.ellipse(-this.r, 4, 4);
-      } // if (features.style == 'normal' && frameCount % 50 == 0 && this.randomId % 100 == 0 && random() < 0.6) {
-      // 	g.push()
-      // 	let lineSp = random([5, 10, 20, 30, 40])
-      // 	let lineCount = random(20)
-      // 	for (var i = 0; i < random(lineCount); i++) {
-      // 		let lLan = 5
-      // 		g.stroke(0, 100)
-      // 		g.line(-this.r - 10 - lLan, -i * lineSp, -this.r - 10 + lLan, -i * lineSp)
-      // 	}
-      // 	g.pop()
-      // }
-      // g.ellipse(this.r+10,this.r+10,2,2)
-
+      }
 
       if (random() < 0.001 && frameCount % 10 == 0) {
         g.stroke(0);
         g.noFill();
-        g.ellipse(0, this.r + 10, random(this.r));
-      } // g.rotate(PI/4-PI/2)
-      // g.rect(0,0,-this.r*2,2)
-
+        g.ellipse(0, useR + 10, random(this.r));
+      }
 
       g.pop();
     }
   }, {
     key: "update",
     value: function update() {
-      var _this2 = this;
+      var _this = this;
 
       if (this.randomId % 1 == 0 && abs(brightness(color(this.altColor)) - brightness(color(this.color))) < 85) {
         this.color = lerpColor(color(this.color), color(this.altColor), 0.005);
@@ -451,7 +440,11 @@ function () {
         this.alive = false;
       }
 
-      if (features.style != 'pure' && random() < 0.25 && frameCount % features.colorChangeFramSpan == 0 && this.randomId % 5 == 0) {
+      if (features.style == 'level' && frameCount > 300 && random() < 0.03) {
+        this.alive = false;
+      }
+
+      if (features.style != 'pure' && features.style != 'level' && random() < 0.25 && frameCount % features.colorChangeFramSpan == 0 && this.randomId % 5 == 0) {
         this.color = random(colors);
         this.color2 = lerpColor(color(random(colors)), color(this.color), 0.6);
       }
@@ -472,13 +465,13 @@ function () {
       // this.v.y += -sin(ang) * 0.2;
 
       wormholes.forEach(function (w) {
-        var ang = atan2(_this2.p.y - w.p.y, _this2.p.x - w.p.x);
-        var dd = dist(_this2.p.x, _this2.p.y, w.p.x, w.p.y);
+        var ang = atan2(_this.p.y - w.p.y, _this.p.x - w.p.x);
+        var dd = dist(_this.p.x, _this.p.y, w.p.x, w.p.y);
         var ratio = map(dd, 0, w.r, 1, 0, true);
         var force = w.intensity * ratio * ratio; //rotate center
 
-        _this2.v.x += w.rotate * force * cos(ang + PI / 2) + w.attract * force * cos(ang);
-        _this2.v.y += w.rotate * force * sin(ang + PI / 2) + w.attract * force * sin(ang);
+        _this.v.x += w.rotate * force * cos(ang + PI / 2) + w.attract * force * cos(ang);
+        _this.v.y += w.rotate * force * sin(ang + PI / 2) + w.attract * force * sin(ang);
       }); //test
       // 		if (noise(this.p.x/120,this.p.y/120)<0.2){
       // 			// originalGraphics.fill('red')
@@ -498,19 +491,13 @@ function () {
         this.v.y = amp * sin(newAng);
       }
 
-      if (features.shapeType == 'polygon') {
-        if (frameCount % 100 == 0 && this.r >= 200) {
-          for (var i = 0; i < this.pointCount; i++) {
-            var _ang3 = i / this.pointCount * 2 * PI;
-
-            var xx = this.r * cos(_ang3) / 2;
-            var yy = this.r * sin(_ang3) / 2;
-          }
-        }
-      }
-
       if (features.style == 'pure') {
         this.color = colors[2];
+      }
+
+      if (features.style == "level") {
+        var colorId = int(noise(this.p.x / 800, this.p.y / 800) * colors.length * 2 + 1 + (0.5 + noise(this.p.x / 50, this.p.y / 50) / 2) * frameCount / features.levelSpeed) % colors.length;
+        this.color = colors[colorId];
       }
     }
   }]);
@@ -599,7 +586,7 @@ function setup() {
 
   var pairId = int(random(7));
   var spanOptions = [10, 12, 16, 20, 32, 44, 60, 68, 72];
-  var maxSizeOptions = [250, 300, 400, 500, 600, 700, 840, 900, 960];
+  var maxSizeOptions = [250, 300, 350, 400, 550, 600, 740, 800, 900];
   var minPairId = features.minPairId;
   var maxPairId = features.maxPairId;
   var span = spanOptions[pairId];
@@ -611,7 +598,7 @@ function setup() {
   var panScale = random([0, 1, 2, 5, 10, 15, 20, 25]);
   var panRatio = random([0, 0, random([0, 5, 10, 15])]);
 
-  if (features.layout == "grid") {
+  if (features.layout == "natural") {
     //noprotect
     for (var _x = 0; _x <= width; _x += span) {
       if (noise(_x / 2) < ignorePossibility) continue;
@@ -627,7 +614,7 @@ function setup() {
         particles.push(new Particle({
           p: createVector(_x, _y),
           r: noise(_x, _y) * maxSize * random(1),
-          color: colors[int(noise(_x / gapScale, _y / gapScale) * colors.length * 2) % colors.length]
+          color: colors[int(noise(_x / gapScale * 2, _y / gapScale * 2) * colors.length * 2) % colors.length]
         }));
 
         var _pairId = int(map(noise(_x / pairNoiseScale, _y / pairNoiseScale), 0, 1, minPairId, maxPairId));
@@ -636,21 +623,38 @@ function setup() {
         maxSize = maxSizeOptions[_pairId];
       }
     }
-  } else if (features.layout == "ring") {
+  } else if (features.layout == "ring" || features.layout == "pie") {
     var minRingR = map(noise(seed), 0, 1, 0.25, 0.4) * width;
     var maxRingR = map(noise(seed + 1), 0, 1, 0.5, 0.7) * width;
+    var baseX = width / 2,
+        baseY = height / 2;
+
+    if (features.layout == "pie") {
+      manRingR = 0;
+      baseX = random([0, 1]) * width;
+      baseY = random([0, 1]) * height;
+      minRingR = width / 3;
+      maxRingR = map(noise(seed + 1), 0, 1, 1, 1.1) * width;
+      span *= 0.9;
+    }
 
     for (var ang = 0; ang <= 2 * PI; ang += 0.1) {
       for (var r = minRingR; r < maxRingR; r += span) {
-        var _x2 = r * cos(ang) + width / 2;
+        var _x2 = r * cos(ang) + baseX;
 
-        var _y2 = r * sin(ang) + height / 2;
+        var _y2 = r * sin(ang) + baseY;
+
+        var size = sqrt(r) * 1.5 + noise(_x2, _y2) * maxSize / 1.5 * random(1); // if (features.layout == "radio") {
+        // 	x = width / 2
+        // 	y = height / 2
+        // 	size = random(width / 2)
+        // }
 
         if (noise(_x2 / gapScale, _y2 / gapScale) <= gapRatio / 1.5) continue;
         particles.push(new Particle({
           p: createVector(_x2, _y2),
-          r: noise(_x2, _y2) * maxSize / 1.5 * random(1),
-          color: colors[int(noise(r / gapScale, ang / gapScale) * colors.length * 2) % colors.length]
+          r: size,
+          color: colors[int(noise(r / gapScale * 1.5, ang * 1.5) * colors.length * 2) % colors.length]
         }));
 
         var _pairId2 = int(map(noise(_x2 / pairNoiseScale, _y2 / pairNoiseScale), 0, 1, minPairId, maxPairId));
@@ -662,7 +666,7 @@ function setup() {
 
     for (var i = 0; i < 50; i++) {
       particles.push(new Particle({
-        p: createVector(width / 2 + random(-minRingR * 0.25, minRingR * 0.25), height / 2 + random(-minRingR * 0.25, minRingR * 0.25)),
+        p: createVector(width / 2 + random(-minRingR * 0.3, minRingR * 0.3), height / 2 + random(-minRingR * 0.3, minRingR * 0.3)),
         r: random(minRingR / 1.9),
         color: random(colors)
       }));
@@ -671,16 +675,24 @@ function setup() {
     var blockWidth = map(noise(seed), 0, 1, 0.1, 0.15) * width;
     var blockHeight = map(noise(seed + 1), 0, 1, 0.3, 0.5) * height;
     var useMaxSize = features.shapeType == 'rect' ? maxSize * 1 : features.shapeType == 'polygon' ? maxSize * 1 : maxSize;
+    var direction = random() < 0.5;
 
     for (var pan = -1; pan <= 1; pan++) {
       for (var x = -blockWidth; x < blockWidth; x += span) {
         for (var y = -blockHeight; y < blockHeight; y += span) {
           var xx = x + pan * blockWidth * 3 + width / 2;
           var yy = y + pan * blockHeight / 2 + height / 2;
+
+          if (direction) {
+            var temp = xx;
+            xx = yy;
+            yy = temp;
+          }
+
           particles.push(new Particle({
             p: createVector(xx, yy),
             r: noise(x, y) * useMaxSize * random(1) * random(1),
-            color: colors[int(noise(xx / gapScale, yy / gapScale) * colors.length * 2) % colors.length]
+            color: colors[int(noise(xx / gapScale, yy / gapScale) * colors.length * 4) % colors.length]
           }));
 
           var _pairId3 = int(map(noise(x / pairNoiseScale, y / pairNoiseScale), 0, 1, minPairId, maxPairId));
@@ -702,17 +714,17 @@ function setup() {
     var _pan = 0;
 
     for (var _r = 0; _r < width * 0.6; _r += span / 2) {
-      for (var _ang4 = 0; _ang4 <= PI * 0.15; _ang4 += 0.05) {
-        var useR = sprialScale * (_r + noise(_ang4 * 500) * _r * 0.6 + map(_ang4, PI / 2, PI, 0, 1, true) * noise(_r * 100) * width / 1.2);
+      for (var _ang3 = 0; _ang3 <= PI * 0.15; _ang3 += 0.05) {
+        var useR = sprialScale * (_r + noise(_ang3 * 500) * _r * 0.6 + map(_ang3, PI / 2, PI, 0, 1, true) * noise(_r * 100) * width / 1.2);
 
-        var _xx = useR * cos(_ang4 + _pan * PI + _r / 40) + width / 2;
+        var _xx = useR * cos(_ang3 + _pan * PI + _r / 40) + width / 2;
 
-        var _yy = useR * sin(_ang4 + _pan * PI + _r / 40) + height / 2;
+        var _yy = useR * sin(_ang3 + _pan * PI + _r / 40) + height / 2;
 
         particles.push(new Particle({
           p: createVector(_xx, _yy),
-          r: noise(_r / 4, _ang4 / 4) * _useMaxSize * random(1) * random(1),
-          color: colors[int(noise(_r / gapScale, _ang4 / gapScale) * colors.length * 2) % colors.length]
+          r: sqrt(_r) * 1.5 + noise(_r / 4, _ang3 / 4) * _useMaxSize * random(1) * random(1),
+          color: colors[int(noise(_r / gapScale, _ang3 * 2) * colors.length * 3) % colors.length]
         }));
 
         var _pairId4 = int(map(noise(x / pairNoiseScale, y / pairNoiseScale), 0, 1, minPairId, maxPairId));
@@ -743,7 +755,7 @@ function setup() {
         particles.push(new Particle({
           p: createVector(_x3, _y3),
           r: (0.5 + noise(_x3, _y3) / 2) * maxSize / 2 * random(1),
-          color: colors[max(int(chessX + chessY + noise(_x3 / gapRatio, _y3 / gapRatio) * 5), 0) % colors.length]
+          color: colors[max(int(chessX * colors.length / 3 + chessY * colors.length / 3 + noise(_x3 / gapRatio, _y3 / gapRatio) * colors.length), 0) % colors.length]
         }));
 
         var _pairId5 = int(map(noise(_x3 / pairNoiseScale, _y3 / pairNoiseScale), 0, 1, minPairId, maxPairId));
@@ -902,25 +914,12 @@ function draw() {
   // image(overallTexture,0,0,1920,1080)
   // image(overallTexture,0,0,height/1080*1920 ,height)
 
-  pop(); // if (frameCount % 500 == 1) {
-  // 	for (var i = 0; i < height; i += 200) {
-  // 		overlayGraphics.stroke(bgColor)
-  // 		overlayGraphics.strokeWeight(10)
-  // 		overlayGraphics.line(0, i, width, i)
-  // 	}
-  // }
-  // if (features.style != 'normal') {
-  // 	push()
-  // 	blendMode(MULTIPLY)
-  // 	image(webGLCanvas, 0, 0)
-  // 	image(overlayGraphics, 0, 0)
-  // 	pop()
-  // }
+  pop();
 }
 
 function keyPressed() {
   if (key == 's') {
-    saveCanvas('test', 'png');
+    saveCanvas(tokenData.hash + '.png');
   }
 
   if (key == 'b') {

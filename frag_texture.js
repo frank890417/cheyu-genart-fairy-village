@@ -27,9 +27,9 @@ const frag_texture = `
 		
 			// st.y = 1.0 - st.y;
 			vec3 color = vec3(0.);
-			color+=cnoise(vec3(st*20.,10.))/7./3.;
-			color+=cnoise(vec3(st*30.,10.))/9./3.;
-			color+=cnoise(vec3(st*10.,10.))/9./3.;
+			color+=cnoise(vec3(st*20.,10.))/7./2.;
+			color+=cnoise(vec3(st*30.,10.))/9./2.;
+			color+=cnoise(vec3(st*10.,10.))/9./2.;
 		
 			color+=cnoise(vec3(st*200.,10.))/9.;
 			color+=cnoise(vec3(st*300.,10.))/11.;
