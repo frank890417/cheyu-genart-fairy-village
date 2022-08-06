@@ -173,7 +173,7 @@ function () {
 
       if (features.style == "glow") {
         if (frameCount % 16 == 1) {
-          if (this.randomId % 500 != 0 || useR > 50) {
+          if (this.randomId % 400 != 0) {
             g.fill(bgColor);
           } else {
             clr.setAlpha(50);
@@ -441,6 +441,10 @@ function () {
       }
 
       if (features.style == 'level' && frameCount > 300 && random() < 0.03) {
+        this.alive = false;
+      }
+
+      if (this.p.x + this.r > width + this.r * 5 || this.p.x - this.r < -this.r * 5 || this.p.y + this.r > height + this.r * 5 || this.p.y - this.r < -this.r * 5) {
         this.alive = false;
       }
 

@@ -45,8 +45,7 @@ function calFeatures() {
     'rect': 4,
     'ellipse': 5,
     'polygon': 3,
-    'triangle': 1,
-    'squiggle': 1
+    'triangle': 1
   });
   features.distortFactor = features.shapeType == 'ellipse' ? 0.8 : 0.1;
   return features;

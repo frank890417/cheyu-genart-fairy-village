@@ -155,7 +155,7 @@ class Particle {
 
 		if (features.style == "glow") {
 			if (frameCount % 16 == 1) {
-				if (this.randomId % 500 != 0 || useR > 50) {
+				if (this.randomId % 400 != 0) {
 					g.fill(bgColor)
 				} else {
 					clr.setAlpha(50)
@@ -423,6 +423,9 @@ class Particle {
 		if (features.style == 'level' && frameCount > 300 && random() < 0.03) {
 			this.alive = false
 		}
+		if (this.p.x + this.r > width + this.r * 5 || this.p.x - this.r < -this.r * 5 || this.p.y + this.r > height + this.r * 5 || this.p.y - this.r < -this.r * 5) {
+			this.alive = false
+		}
 		if (features.style != 'pure' && features.style != 'level' &&
 			random() < 0.25 && frameCount % features.colorChangeFramSpan == 0 && this.randomId % 5 == 0) {
 			this.color = random(colors)
@@ -580,6 +583,7 @@ function setup() {
 	if (features.style == "pure") {
 		bgColor = color(colors[2])
 	}
+
 
 
 	let pairId = int(random(7))
