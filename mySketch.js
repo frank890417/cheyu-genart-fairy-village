@@ -1,5 +1,6 @@
 // noprotect
-let themes = [{
+let themes = [
+	{
 		label: "Forest",
 		colors: "073b3a-0b6e4f-08a045-6bbf59-ddb771-fff".split("-").map(a => "#" + a)
 	},
@@ -34,11 +35,15 @@ let themes = [{
 		colors: "07252F-7c6a0a-babd8d-ffdac6-fa9500-eb6424-FCFBF6".split("-").map(a => "#" + a),
 	},
 
-
 	{
-		label: "cyber",
-		colors: "000-28190e-71f79f-3dd6d0-15b097-fff".split("-").map(a => "#" + a),
+		label: "Rainbow",
+		colors: "e71d36-ffca3a-b5e48c-1982c4-03045e-fff".split("-").map(a => "#" + a),
 	},
+
+	// {
+	// 	label: "cyber",
+	// 	colors: "000-28190e-71f79f-3dd6d0-15b097-fff".split("-").map(a => "#" + a),
+	// },
 
 	{
 		label: "Cold",
@@ -80,7 +85,7 @@ var features = {}
 
 
 let colors
-var DEFAULT_SIZE = 1440;
+var DEFAULT_SIZE = 1400;
 let ratio = 1000 / 1000
 var WIDTH = window.innerWidth;
 var HEIGHT = window.innerHeight;
@@ -109,7 +114,7 @@ class Wormhole {
 		Object.assign(def, args)
 		Object.assign(this, def)
 	}
-	update() {}
+	update() { }
 }
 class Particle {
 	constructor(args) {
@@ -175,7 +180,7 @@ class Particle {
 				g.noStroke()
 			}
 		}
-		if (features.style == "pure") {
+		if (features.style == "pure" || features.style == "area") {
 			if (frameCount % 30 == 1) {
 				if (frameCount % 150 == 1 && useR > 36) {
 					g.strokeWeight(3)
@@ -346,6 +351,13 @@ class Particle {
 		g.pop()
 
 
+		// stroke decos
+		let verticalLineSpan = 40
+		if (features.style == "shape") verticalLineSpan = 30
+
+		if (features.style == "stroke") verticalLineSpan = 35
+		// vertical lines
+
 		//grass
 		if (this.randomId % 50 == 0 && frameCount % 120 == 0 && useR > 2) {
 
@@ -360,11 +372,6 @@ class Particle {
 			g.pop()
 		}
 
-		let verticalLineSpan = 40
-		if (features.style == "shape") verticalLineSpan = 30
-
-		if (features.style == "stroke") verticalLineSpan = 35
-		// vertical lines
 		if (this.randomId % verticalLineSpan == 0) {
 			g.fill(0)
 			g.ellipse(0, useR + 10, 2, 2)
@@ -396,7 +403,7 @@ class Particle {
 
 	}
 	update() {
-		if (this.randomId % 1 == 0 && abs(brightness(color(this.altColor)) - brightness(color(this.color))) < 85) {
+		if (abs(brightness(color(this.altColor)) - brightness(color(this.color))) < 85) {
 			this.color = lerpColor(color(this.color), color(this.altColor), 0.005)
 		}
 		if (this.randomId % 40 == 0 && frameCount % 50 == 0) {
@@ -412,6 +419,11 @@ class Particle {
 		this.p.add(this.v)
 		this.v.add(this.a)
 		this.r *= this.shrinkRatio
+		if (this.shrinkRatio >= 1) {
+			if (frameCount > 50 + 100 * noise(this.randomId)) {
+				this.alive = false
+			}
+		}
 
 
 		if (this.r < 0.1) {
@@ -426,7 +438,7 @@ class Particle {
 		if (this.p.x + this.r > width + this.r * 5 || this.p.x - this.r < -this.r * 5 || this.p.y + this.r > height + this.r * 5 || this.p.y - this.r < -this.r * 5) {
 			this.alive = false
 		}
-		if (features.style != 'pure' && features.style != 'level' &&
+		if (features.style != 'pure' && features.style != 'level' && features.style != 'area' &&
 			random() < 0.25 && frameCount % features.colorChangeFramSpan == 0 && this.randomId % 5 == 0) {
 			this.color = random(colors)
 			this.color2 = lerpColor(color(random(colors)), color(this.color), 0.6)
@@ -488,9 +500,16 @@ class Particle {
 
 		if (features.style == 'pure') {
 			this.color = colors[2]
+			this.color2 = colors[2]
 		}
-		if (features.style == "level") {
+		if (features.style == 'area') {
+			let colorId = int(noise(this.p.x / features.mapScale, this.p.y / features.mapScale) * colors.length * 2) % colors.length
+			let c1 = colors[colorId]
+			let c2 = colors[(colorId + 1) % colors.length]
+			this.color = lerpColor(color(c1), color(c2), map(frameCount, 0, 600 * (0.5 + noise(this.p.x / 50, this.p.y / 50) / 2), 0, 1, true))
+		}
 
+		if (features.style == "level") {
 			let colorId = int(noise(this.p.x / 800, this.p.y / 800) * colors.length * 2 + 1 + (0.5 + noise(this.p.x / 50, this.p.y / 50) / 2) * frameCount / features.levelSpeed) % colors.length
 			this.color = colors[colorId]
 
@@ -509,7 +528,7 @@ let wormholes = []
 let overallTexture
 let bgColor
 let sortedColors = []
-
+let selectedTheme
 function preload() {
 	noiseSeed(random() * 10000)
 
@@ -517,9 +536,13 @@ function preload() {
 	theShaderTexture = new p5.Shader(this.renderer, vert, frag_texture)
 
 	features = calFeatures()
-	colors = random(themes).colors
+	selectedTheme = random(themes)
+	colors = selectedTheme.colors
 
-	colors = colors.sort((a, b) => random([-0.5, 0.5]))
+	if (selectedTheme.label != 'Rainbow') {
+		colors = colors.sort((a, b) => random([-0.5, 0.5]))
+	}
+
 	sortedColors = colors.sort((a, b) => brightness(color(b)) - brightness(color(a)))
 	console.log(features)
 }
@@ -560,9 +583,7 @@ function setup() {
 		g.translate(rx, ry)
 		g.translate(width / 2, height / 2)
 		g.rotate(ra)
-		// if (!features.style=="normal"){
 		g.scale(rscale)
-		// }
 		g.translate(-width / 2, -height / 2)
 
 	}

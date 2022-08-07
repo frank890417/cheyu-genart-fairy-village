@@ -1,14 +1,14 @@
 function calFeatures() {
   let features = {}
   features.style = random({
-    normal: 5,
+    mix: 1,
     glow: 1,
+    area: 3,
     pure: 1,
     level: 1
     // stroke: 1000
   })
-  features.type3D = random(['normal', 'ball'])
-  features.type3D = 'ball'
+  features.mapScale = random(500, 3000)
   features.levelSpeed = random([15, 20, 30, 40])
   // features.style=random()<1?'stroke':'normal'
   // features.style=random()<0.2?'shape':features.style 
@@ -49,7 +49,7 @@ function calFeatures() {
   features.hasGrid = false
   features.hasBorder = true
   features.wormholeCount = random([1, 2, 3])
-  features.colorChangeFramSpan = random([30, 40, 60, 100])
+  features.colorChangeFramSpan = random([30, 40, 60, 100, 200])
   features.shapeType = random({
     'rect': 4,
     'ellipse': 5,
