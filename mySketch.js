@@ -7,7 +7,7 @@ let themes = [
 
 	{
 		label: "Blackwhite",
-		colors: "fff-eee-eaeaea-fafafa-111".split("-").map(a => "#" + a),
+		colors: "eee-eaeaea-fafafa-111-fff".split("-").map(a => "#" + a),
 	},
 
 	{
@@ -149,8 +149,11 @@ class Particle {
 		g.push()
 		// g.blendMode(MULTIPLY)
 		let clr = color(this.color)
+		let shClr = color(0)
 		g.fill(clr)
-		g.drawingContext.shadowColor = color(0, 6)
+		shClr.setAlpha(7)
+		g.drawingContext.shadowColor = shClr
+		shClr.setAlpha(255)
 		g.drawingContext.shadowOffsetY = 10
 		g.drawingContext.shadowOffsetX = 10
 		// let dir = this.p.copy().sub(createVector(width / 2, height / 2)).heading()
@@ -418,7 +421,18 @@ class Particle {
 		}
 		this.p.add(this.v)
 		this.v.add(this.a)
-		this.r *= this.shrinkRatio
+		// if (features.type3D == 'static') {
+		// this.r -= this.shrinkRatio
+		// } else if (features.type3D == 'sharp') {
+		if (this.r * this.shrinkRatio < 2) {
+			this.r -= 2
+		} else {
+			this.r *= this.shrinkRatio
+		}
+		// }
+
+
+
 		if (this.shrinkRatio >= 1) {
 			if (frameCount > 50 + 100 * noise(this.randomId)) {
 				this.alive = false
@@ -426,7 +440,7 @@ class Particle {
 		}
 
 
-		if (this.r < 0.1) {
+		if (this.r <= 2) {
 			this.alive = false
 		}
 		if (frameCount > 650 && random() < 0.04 && this.randomId % 6 <= 3) {

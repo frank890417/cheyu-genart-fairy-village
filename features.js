@@ -1,15 +1,17 @@
 function calFeatures() {
   let features = {}
   features.style = random({
-    mix: 1,
+    mix: 3,
     glow: 1,
-    area: 3,
+    area: 9,
     pure: 1,
     level: 1
     // stroke: 1000
   })
-  features.mapScale = random(500, 3000)
+  features.mapScale = random(500, 2800)
   features.levelSpeed = random([15, 20, 30, 40])
+  features.type3D = random(['static', 'sharp'])
+  features.type3D = 'static'
   // features.style=random()<1?'stroke':'normal'
   // features.style=random()<0.2?'shape':features.style 
   features.rotateFactors = random([
