@@ -12,8 +12,13 @@ if (!fs.existsSync(dir)) {
 }
 
 var ResultArray;
-fs.readFile("Sketch.js", "utf8", function (err, contents) {
-  // console.log(contents);
+
+function getFilesizeInBytes(filename) {
+  var stats = fs.statSync(filename);
+  var fileSizeInBytes = stats.size;
+  return fileSizeInBytes;
+}
+fs.readFile("mySketch.js", "utf8", function (err, contents) {
   var chunks = contents.split("//%");
 
   chunks.forEach((chunk, chunkId) => {
@@ -21,10 +26,10 @@ fs.readFile("Sketch.js", "utf8", function (err, contents) {
     child.exec(
       `minify ${dir}/chunk${chunkId}.js > ${dir}/chunk${chunkId}.min.js`,
       (error, stdout, stderr) => {
-        if (error) {
-        }
       }
     );
+    // let file = `${dir}/chunk${chunkId}.min.js`
+    // console.log(file, getFilesizeInBytes(file))
   });
 
   let featureScript = contents
