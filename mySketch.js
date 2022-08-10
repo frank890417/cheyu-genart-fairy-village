@@ -518,7 +518,7 @@ function calFeatures() {
 		glow: 1,
 		area: 9,
 		pure: 1,
-		level: 1
+		level: 1,
 		// stroke: 1000
 	})
 	features.mapScale = random(500, 2800)
@@ -569,7 +569,8 @@ function calFeatures() {
 		'rect': 4,
 		'ellipse': 5,
 		'polygon': 3,
-		'triangle': 1
+		'triangle': 1,
+		'noise': 10
 	})
 	features.distortFactor = features.shapeType == 'ellipse' ? 0.8 : 0.1
 
@@ -646,7 +647,6 @@ class Particle {
 		let shClr = color(0)
 		g.fill(clr)
 		shClr.setAlpha(10 - map(this.r, 100, 0, 0, 4, true))
-
 		g.drawingContext.shadowColor = shClr
 		shClr.setAlpha(255)
 		g.drawingContext.shadowOffsetY = 10
@@ -845,6 +845,28 @@ class Particle {
 			g.drawingContext.shadowOffsetY = 10
 			g.drawingContext.shadowOffsetX = 10
 			g.ellipse(0, 0, useR, useR)
+		} else if (features.shapeType == "noise") {
+			if (this.randomId % 3 == 0) {
+
+				// g.noStroke()
+
+				g.drawingContext.shadowColor = color(0, 10)
+				let d = dist(this.p.x, this.p.y, width / 2, height / 2) + 3
+				let ang = atan2(this.p.y - height / 2, this.p.x - width / 2)
+				g.drawingContext.shadowOffsetX = -d * cos(ang) / 40
+				g.drawingContext.shadowOffsetY = -d * sin(ang) / 40
+				let angSpan = noise(this.randomId) * 0.5 + 0.05
+				g.beginShape()
+				for (let ang = 0; ang < 2 * PI; ang += angSpan) {
+					let freq = noise(this.randomId) * 300 + 30
+					let useAng = ang + noise(frameCount / freq, ang, this.randomId) + this.randomId % 360
+					let useR = 1.5 * this.r * noise(frameCount / freq, ang, this.randomId)
+					let xx = cos(useAng) * useR
+					let yy = sin(useAng) * useR
+					vertex(xx, yy)
+				}
+				g.endShape()
+			}
 		}
 		g.pop()
 
