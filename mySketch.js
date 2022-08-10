@@ -570,7 +570,7 @@ function calFeatures() {
 		'ellipse': 5,
 		'polygon': 3,
 		'triangle': 1,
-		'noise': 10
+		'noise': 1
 	})
 	features.distortFactor = features.shapeType == 'ellipse' ? 0.8 : 0.1
 
@@ -637,6 +637,7 @@ class Particle {
 		def.maxR = def.r
 		Object.assign(def, args)
 		Object.assign(this, def)
+		this.originalP = this.p.copy()
 	}
 	draw(g) {
 		let useR = this.r
@@ -855,7 +856,7 @@ class Particle {
 				let ang = atan2(this.p.y - height / 2, this.p.x - width / 2)
 				g.drawingContext.shadowOffsetX = -d * cos(ang) / 40
 				g.drawingContext.shadowOffsetY = -d * sin(ang) / 40
-				let angSpan = noise(this.randomId) * 0.5 + 0.05
+				let angSpan = noise(this.randomId) * 0.4 + 0.03
 				g.beginShape()
 				for (let ang = 0; ang < 2 * PI; ang += angSpan) {
 					let freq = noise(this.randomId) * 300 + 30
@@ -865,7 +866,7 @@ class Particle {
 					let yy = sin(useAng) * useR
 					vertex(xx, yy)
 				}
-				g.endShape()
+				g.endShape(CLOSE)
 			}
 		}
 		g.pop()
