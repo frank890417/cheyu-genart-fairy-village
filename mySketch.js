@@ -573,6 +573,7 @@ function calFeatures() {
 		'noise': 1
 	})
 	features.distortFactor = features.shapeType == 'ellipse' ? 0.8 : 0.1
+	features.hasDeco = true
 
 }
 calFeatures()
@@ -851,9 +852,9 @@ class Particle {
 
 				// g.noStroke()
 
-				g.drawingContext.shadowColor = color(0, 10)
-				let d = dist(this.p.x, this.p.y, width / 2, height / 2) + 3
+				let d = dist(this.p.x, this.p.y, width / 2, height / 2) + 5
 				let ang = atan2(this.p.y - height / 2, this.p.x - width / 2)
+				g.drawingContext.shadowColor = color(0, 10)
 				g.drawingContext.shadowOffsetX = -d * cos(ang) / 40
 				g.drawingContext.shadowOffsetY = -d * sin(ang) / 40
 				let angSpan = noise(this.randomId) * 0.4 + 0.03
@@ -861,7 +862,7 @@ class Particle {
 				for (let ang = 0; ang < 2 * PI; ang += angSpan) {
 					let freq = noise(this.randomId) * 300 + 30
 					let useAng = ang + noise(frameCount / freq, ang, this.randomId) + this.randomId % 360
-					let useR = 1.5 * this.r * noise(frameCount / freq, ang, this.randomId)
+					let useR = 1.2 * this.r * noise(frameCount / freq, ang, this.randomId)
 					let xx = cos(useAng) * useR
 					let yy = sin(useAng) * useR
 					vertex(xx, yy)
@@ -872,53 +873,56 @@ class Particle {
 		g.pop()
 
 
-		// stroke decos
-		let verticalLineSpan = 40
-		if (features.style == "shape") verticalLineSpan = 30
+		if (features.hasDeco) {
 
-		if (features.style == "stroke") verticalLineSpan = 35
-		// vertical lines
+			// stroke decos
+			let verticalLineSpan = 40
+			if (features.style == "shape") verticalLineSpan = 30
 
-		//grass
-		if (this.randomId % 50 == 0 && frameCount % 120 == 0 && useR > 2) {
+			if (features.style == "stroke") verticalLineSpan = 35
+			// vertical lines
 
-			// g.fill(bgColor)
-			g.push()
-			g.translate(useR + 20, 0)
-			g.stroke(this.color2)
-			g.translate(0, random([-this.r, this.r]))
-			g.line(0, 0, 0, -5)
-			g.line(0, 0, -3, -5)
-			g.line(0, 0, 3, -5)
-			g.pop()
+			//grass
+			if (this.randomId % 50 == 0 && frameCount % 120 == 0 && useR > 2) {
+
+				// g.fill(bgColor)
+				g.push()
+				g.translate(useR + 20, 0)
+				g.stroke(this.color2)
+				g.translate(0, random([-this.r, this.r]))
+				g.line(0, 0, 0, -5)
+				g.line(0, 0, -3, -5)
+				g.line(0, 0, 3, -5)
+				g.pop()
+			}
+
+			if (this.randomId % verticalLineSpan == 0) {
+				g.fill(0)
+				g.ellipse(0, useR + 10, 2, 2)
+			}
+
+			if (this.randomId % 25 == 0) {
+
+				g.fill(bgColor)
+				g.ellipse(useR / 2, 0, 2, 2)
+			}
+			if (this.randomId % 80 == 0) {
+
+				g.fill(255)
+				let whiteR = (noise(this.randomId, this.p.x / 40, this.p.y / 40) * 2) + 1
+				g.ellipse(-useR - 10, useR + 10, whiteR, whiteR)
+			}
+			if (useR > 10 && (this.randomId + frameCount) % 60 == 0 && this.randomId % 4 == 0) {
+				g.fill(this.color2)
+				g.ellipse(-this.r, 4, 4)
+			}
+			if (random() < 0.001 && frameCount % 10 == 0) {
+				g.stroke(0)
+				g.noFill()
+				g.ellipse(0, useR + 10, random(this.r))
+			}
+
 		}
-
-		if (this.randomId % verticalLineSpan == 0) {
-			g.fill(0)
-			g.ellipse(0, useR + 10, 2, 2)
-		}
-
-		if (this.randomId % 25 == 0) {
-
-			g.fill(bgColor)
-			g.ellipse(useR / 2, 0, 2, 2)
-		}
-		if (this.randomId % 80 == 0) {
-
-			g.fill(255)
-			let whiteR = (noise(this.randomId, this.p.x / 40, this.p.y / 40) * 2) + 1
-			g.ellipse(-useR - 10, useR + 10, whiteR, whiteR)
-		}
-		if (useR > 10 && (this.randomId + frameCount) % 60 == 0 && this.randomId % 4 == 0) {
-			g.fill(this.color2)
-			g.ellipse(-this.r, 4, 4)
-		}
-		if (random() < 0.001 && frameCount % 10 == 0) {
-			g.stroke(0)
-			g.noFill()
-			g.ellipse(0, useR + 10, random(this.r))
-		}
-
 
 		g.pop()
 
