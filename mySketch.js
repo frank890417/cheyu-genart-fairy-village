@@ -506,6 +506,10 @@ let themes = [
 	{
 		label: "",
 		colors: "ebe9e9-f3f8f2-3581b8-fcb07e-dee2d6-181175".split("-").map(a => "#" + a)
+	},
+	{
+		label: "Energetic",
+		colors: "000000-1A4D2E-FF9F29-FAF3E3-FEE0C0-ff5c3f".split("-").map(a => "#" + a)
 	}
 ]
 
@@ -514,11 +518,11 @@ var features = {}
 
 function calFeatures() {
 	features.style = random({
-		mix: 3,
+		mix: 6,
 		glow: 1,
-		area: 9,
-		pure: 1,
-		level: 1,
+		area: 10,
+		pure: 2,
+		level: 3,
 		// stroke: 1000
 	})
 	features.mapScale = random(500, 2800)
@@ -552,7 +556,7 @@ function calFeatures() {
 			8: 5
 		}) * 1
 	features.layout = random({
-		natural: 4,
+		natural: 3,
 		ring: 2,
 		blocks: 1,
 		spiral: 1,
@@ -1436,8 +1440,16 @@ function draw() {
 
 	}
 
-
+	push()
+	drawingContext.filter = "blur(0px)"
 	image(wC, 0, 0)
+	if (features.style == 'glow') {
+		blendMode(SCREEN)
+		drawingContext.globalAlpha = 0.5
+		drawingContext.filter = "blur(100px)"
+		image(wC, 20, 20)
+		pop()
+	}
 
 	push()
 
