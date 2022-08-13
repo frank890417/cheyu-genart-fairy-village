@@ -303,12 +303,10 @@ const frag = `
 
 		// st.x+=pNoise(st*20.,5)*pNoise(st*10.+2.,10)/20.;
 		// st.y += pNoise(st * 20., 5) * pNoise(st * 10. + 2., 10) / 20.;
-		 
- 
 	
 		vec3 canvasOffset = texture2D(u_canvas_tex,st).rgb;
-		st.x+=0.35/255.- canvasOffset.r/255.*3. ;
-		st.y+=0.35/255.- canvasOffset.g/255.*3.  ;
+		st.x+= canvasOffset.r/100. ;
+		st.y+= canvasOffset.g/100.  ;
 		
 		float distortFactor = u_distortFactor;
 		st.x+=  cnoise(vec3(st*2.,${(random() * 1000).toFixed(4)}))/(30.)*distortFactor  ;
@@ -322,21 +320,21 @@ const frag = `
 		//offset color Blocks
 		float offsetColor = 1./300.;
 		stBorder.x-= texColor0.r*offsetColor;
-		stBorder.y-=texColor0.g*offsetColor+ texColor0.b*offsetColor;
+		stBorder.y-= texColor0.g*offsetColor+ texColor0.b*offsetColor;
 		
 		vec4 texColor1 = texture2D(u_tex,st);
 
 		
 		vec2 st2 = st;
 		//brush feeling  
-		float brushFactor = 500.;
-		st2.x+=cnoise(vec3(st*1000.,100.))/brushFactor;
-		st2.y+=cnoise(vec3(st*1000.,1000.))/brushFactor; 
+		float brushFactor = 5000.;
+		// st2.x+=cnoise(vec3(st*1000.,100.))/brushFactor;
+		// st2.y+=cnoise(vec3(st*1000.,1000.))/brushFactor; 
  
 		vec4 texColor2 = texture2D(u_tex,st2);
 		vec2 st3 = st;
-		st3.x += pNoise(st * 500., 10) / 2.;
-		st3.y += pNoise(st * 500., 10) / 2.;
+		// st3.x += pNoise(st * 500., 10) / 2.;
+		// st3.y += pNoise(st * 500., 10) / 2.;
 		vec4 texColor3 = texture2D(u_tex, st3);
 
 		texColor2 = (texColor2*1. + texColor3*1.)/1.2;
@@ -345,7 +343,7 @@ const frag = `
 		// texColor*=1.-d+0.3;
 		// gl_FragColor= vec4(color,1.0)+texColor2; 
 		
-		float borderWidth = 24.;
+		float borderWidth = 30.;
 		bool isBorder = stBorder.x*u_resolution.x<borderWidth
 		|| (1.-stBorder.x)*u_resolution.x<borderWidth 
 		|| stBorder.y*u_resolution.y<borderWidth 
@@ -544,15 +542,14 @@ function calFeatures() {
 	features.minPairId = random({
 		0: 30,
 		1: 10,
-		2: 1,
-		3: 1,
-		4: 1
+		2: 5,
+		3: 5,
 	}) * 1
 	features.maxPairId =
 		random({
 			5: 1,
-			6: 5,
-			7: 10,
+			6: 10,
+			7: 5,
 			8: 5
 		}) * 1
 	features.layout = random({
@@ -585,8 +582,8 @@ calFeatures()
 //#FEATURE_END
 
 let colors
-var DEFAULT_SIZE = 1400;
-let ratio = 1000 / 1000
+var DEFAULT_SIZE = 1200;
+let ratio = 1200 / 1000
 var WIDTH = window.innerWidth;
 var HEIGHT = window.innerHeight;
 var DIM = HEIGHT;
@@ -652,7 +649,7 @@ class Particle {
 		let clr = color(this.color)
 		let shClr = color(0)
 		g.fill(clr)
-		shClr.setAlpha(10 - map(this.r, 100, 0, 0, 4, true))
+		shClr.setAlpha(10 - map(this.r, 100, 0, 0, 5, true))
 		g.drawingContext.shadowColor = shClr
 		shClr.setAlpha(255)
 		g.drawingContext.shadowOffsetY = 10
@@ -689,7 +686,7 @@ class Particle {
 				if (frameCount % 150 == 1 && useR > 36) {
 					g.strokeWeight(3)
 				} else {
-					g.drawingContext.setLineDash([1.5, 3])
+					g.drawingContext.setLineDash([1, 3])
 				}
 				// if (frameCount == 1) {
 				// 	g.strokeWeight(8)
@@ -697,7 +694,7 @@ class Particle {
 				// if (brightness(this.color) < 50) {
 				// 	g.stroke(255, 100)
 				// } else {
-				g.stroke(0, 200)
+				g.stroke(0, 100)
 				// g.stroke(0, 60)
 				// }
 
@@ -748,7 +745,6 @@ class Particle {
 
 		} else if (features.shapeType == "triangle") {
 
-
 			g.translate(0, -frameCount / (8 + noise(10, seed) * 2))
 			g.rotate(frameCount / 2000)
 			if (this.randomId % 40 == 0) {
@@ -757,6 +753,7 @@ class Particle {
 			g.drawingContext.shadowOffsetY = 10
 			g.drawingContext.shadowOffsetX = 10
 			g.drawingContext.shadowColor = color(0, 5)
+
 			g.beginShape()
 			let lines = []
 			for (let i = 0; i < 3; i++) {
@@ -847,10 +844,12 @@ class Particle {
 
 				g.pop()
 			}
-			g.translate(0, -frameCount / (30 + noise(10, this.randomId) * 20))
+			g.translate(-frameCount / (30 + noise(10, this.randomId) * 20), -frameCount / (30 + noise(10, this.randomId) * 20))
 			g.drawingContext.shadowOffsetY = 10
 			g.drawingContext.shadowOffsetX = 10
 			g.ellipse(0, 0, useR, useR)
+
+
 		} else if (features.shapeType == "noise") {
 			if (this.randomId % 3 == 0) {
 
@@ -1205,7 +1204,7 @@ function setup() {
 			baseX = random([0, 1]) * width
 			baseY = random([0, 1]) * height
 			minRingR = width / 3
-			maxRingR = map(noise(seed + 1), 0, 1, 1, 1.1) * width
+			maxRingR = map(noise(seed + 1), 0, 1, 1, 0.75) * width
 			span *= 0.9
 		}
 
@@ -1239,15 +1238,15 @@ function setup() {
 			}))
 		}
 	} else if (features.layout == "blocks") {
-		let blockWidth = map(noise(seed), 0, 1, 0.1, 0.15) * width
-		let blockHeight = map(noise(seed + 1), 0, 1, 0.3, 0.5) * height
 		let useMaxSize = features.shapeType == 'rect' ? (maxSize * 1) : features.shapeType == 'polygon' ? (maxSize * 1) : maxSize
 		let direction = random() < 0.5
+		let blockWidth = map(noise(seed), 0, 1, 0.1, 0.15) * (direction ? height : width)
+		let blockHeight = map(noise(seed + 1), 0, 1, 0.3, 0.5) * (direction ? width : height)
 		for (let pan = -1; pan <= 1; pan++) {
 			for (var x = -blockWidth; x < blockWidth; x += span) {
 				for (var y = -blockHeight; y < blockHeight; y += span) {
-					let xx = x + pan * blockWidth * 3 + width / 2
-					let yy = y + pan * blockHeight / 2 + height / 2
+					let xx = x + pan * blockWidth * 3 + (direction ? width : height) / 2
+					let yy = y + pan * blockHeight / 2 + (direction ? width : height) / 2
 					if (direction) {
 						let temp = xx
 						xx = yy
