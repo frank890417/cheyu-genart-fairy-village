@@ -523,7 +523,7 @@ function calFeatures() {
 		level: 3,
 		// stroke: 1000
 	})
-	features.mapScale = random(500, 2800)
+	features.mapScale = random(300, 2000)
 	features.levelSpeed = random([15, 20, 30, 40])
 	features.type3D = random(['static', 'sharp'])
 	features.type3D = 'static'
