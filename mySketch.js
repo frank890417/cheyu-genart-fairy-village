@@ -106,7 +106,45 @@ const frag_functions_default = `
 			_st *= _zoom;
 			return fract(_st);
 	}
-
+	mat4 brightnessMatrix( float brightness )
+	{
+		return mat4( 1, 0, 0, 0,
+					 0, 1, 0, 0,
+					 0, 0, 1, 0,
+					 brightness, brightness, brightness, 1 );
+	}
+	
+	mat4 contrastMatrix( float contrast )
+	{
+		float t = ( 1.0 - contrast ) / 2.0;
+		
+		return mat4( contrast, 0, 0, 0,
+					 0, contrast, 0, 0,
+					 0, 0, contrast, 0,
+					 t, t, t, 1 );
+	
+	}
+	
+	mat4 saturationMatrix( float saturation )
+	{
+		vec3 luminance = vec3( 0.3086, 0.6094, 0.0820 );
+		
+		float oneMinusSat = 1.0 - saturation;
+		
+		vec3 red = vec3( luminance.x * oneMinusSat );
+		red+= vec3( saturation, 0, 0 );
+		
+		vec3 green = vec3( luminance.y * oneMinusSat );
+		green += vec3( 0, saturation, 0 );
+		
+		vec3 blue = vec3( luminance.z * oneMinusSat );
+		blue += vec3( 0, 0, saturation );
+		
+		return mat4( red,     0,
+					 green,   0,
+					 blue,    0,
+					 0, 0, 0, 1 );
+	}
 	//	Classic Perlin 3D Noise 
 	//	by Stefan Gustavson
 
@@ -301,12 +339,14 @@ const frag = `
 		st.x*=u_resolution.x/u_resolution.y;
 		vec2 stBorder =st;
 
-		// st.x+=pNoise(st*20.,5)*pNoise(st*10.+2.,10)/20.;
-		// st.y += pNoise(st * 20., 5) * pNoise(st * 10. + 2., 10) / 20.;
+		st.x+=pNoise(st*20.,5)*pNoise(st*10.+2.,10)/20.;
+		st.y += pNoise(st * 20., 5) * pNoise(st * 10. + 2., 10) / 20.;
 	
 		vec3 canvasOffset = texture2D(u_canvas_tex,st).rgb;
-		st.x+= canvasOffset.r/100. ;
-		st.y+= canvasOffset.g/100.  ;
+		st.x+= canvasOffset.r/80. ;
+		st.y+= canvasOffset.g/80.  ;
+
+
 		
 		float distortFactor = u_distortFactor;
 		st.x+=  cnoise(vec3(st*2.,${(random() * 1000).toFixed(4)}))/(30.)*distortFactor  ;
@@ -318,9 +358,9 @@ const frag = `
 
 		
 		//offset color Blocks
-		float offsetColor = 1./300.;
-		stBorder.x-= texColor0.r*offsetColor;
-		stBorder.y-= texColor0.g*offsetColor+ texColor0.b*offsetColor;
+		float offsetColor = 1./200.;
+		stBorder.x-=(0.5-texColor0.r-texColor0.b/2.)*offsetColor;
+		stBorder.y-=(0.5- texColor0.g)*offsetColor+ texColor0.b*offsetColor;
 		
 		vec4 texColor1 = texture2D(u_tex,st);
 
@@ -369,6 +409,20 @@ const frag = `
 		// result.r*=fade;
 		// result.g *= fade;
 		// result.b *= fade;
+
+		result*=0.95+texColor0/10.;
+		result*=0.95+ vec4(canvasOffset,1.)/50.;
+		result = mix(result-mod(result,0.1),result,0.2  );
+
+		
+		result = mix(result ,result*result,0.05  );
+
+		float ps = pNoise(st*50.,5);
+		result.b *= 0.95+pNoise(st*5.+result.b + ps,3)/5.;
+		result.g *= 0.95+pNoise(st*5.+result.g+ ps,3)/5.;
+		result.r *= 0.95+pNoise(st*5.+result.r+ ps,3)/5.;
+
+
 		if ( isBorder){
 			result.rgb= vec3(u_bgColor);
 		} else {
@@ -376,7 +430,9 @@ const frag = `
 			// if ( distance(result.rgb, u_bgColor.rgb)<0.01 ){
 			// 	result.a=0.;
 			// }
-		} 
+		} 		
+		
+ 
 		gl_FragColor =result;	
 	}
 `
@@ -409,23 +465,17 @@ const frag_texture = `
 			st*=vec2(4.,1.);
 		
 			// st.y = 1.0 - st.y;
-			vec3 color = vec3(0.);
-			color+=cnoise(vec3(st*20.,10.))/7./2.;
-			color+=cnoise(vec3(st*30.,10.))/9./2.;
-			color+=cnoise(vec3(st*10.,10.))/9./2.;
-		
-			color+=cnoise(vec3(st*200.,10.))/9.;
-			color+=cnoise(vec3(st*300.,10.))/11.;
-			color+=cnoise(vec3(st*100.,10.))/11.;
-		
-			color+=cnoise(vec3(st*200.,10.))/9.;
-			color+=cnoise(vec3(st*300.,10.))/11.;
-			color+=cnoise(vec3(st*100.,10.))/11.;
-			color+=pNoise(st*10.,5)*pNoise(st*10.+2.,10)/3.;
-			color+=pNoise(st*30.,5)*pNoise(st*40.+2.,10)/3.; 
+			vec3 color = vec3(0.); 
+		  
+			color+= pNoise(st*vec2(600. ,1.) + vec2(0, pNoise(st*vec2(400.,1.),10)*50.),10)/2.; 
 			color/=2.;
 		
+			
+			
 			color = 1.-color;
+			color*= 1.+pNoise(st*10. + pNoise(st*50.,5),3); 
+
+
 			color*=vec3(1.,1.,0.96);
 		
 		// vec3 color = vec3(st.x,st.y,1.);
@@ -844,26 +894,27 @@ class Particle {
 
 				g.pop()
 			}
-			g.translate(-frameCount / (30 + noise(10, this.randomId) * 20), -frameCount / (30 + noise(10, this.randomId) * 20))
+			g.drawingContext.shadowColor = color(0, 5)
+			g.translate(-frameCount / (60 + noise(10, this.randomId) * 20), -frameCount / (60 + noise(10, this.randomId) * 20))
 			g.drawingContext.shadowOffsetY = 10
 			g.drawingContext.shadowOffsetX = 10
 			g.ellipse(0, 0, useR, useR)
 
 
 		} else if (features.shapeType == "noise") {
-			if (this.randomId % 3 == 0) {
+			if (this.randomId % 3 == 0 || this.randomId % 4 == 0) {
 
 				// g.noStroke()
 
 				let d = dist(this.p.x, this.p.y, width / 2, height / 2) + 5
 				let ang = atan2(this.p.y - height / 2, this.p.x - width / 2)
-				g.drawingContext.shadowColor = color(0, 10)
-				g.drawingContext.shadowOffsetX = -d * cos(ang) / 40
-				g.drawingContext.shadowOffsetY = -d * sin(ang) / 40
+				// g.drawingContext.shadowColor = color(0, 10)
+				// g.drawingContext.shadowOffsetX = -d * cos(ang) / 40
+				// g.drawingContext.shadowOffsetY = -d * sin(ang) / 40
 				let angSpan = noise(this.randomId) * 0.4 + 0.03
 				g.beginShape()
 				for (let ang = 0; ang < 2 * PI; ang += angSpan) {
-					let freq = noise(this.randomId) * 300 + 30
+					let freq = noise(this.randomId) * 300 + 100
 					let useAng = ang + noise(frameCount / freq, ang, this.randomId) + this.randomId % 360
 					let useR = 1.2 * this.r * noise(frameCount / freq, ang, this.randomId)
 					let xx = cos(useAng) * useR
@@ -885,19 +936,19 @@ class Particle {
 			if (features.style == "stroke") verticalLineSpan = 35
 			// vertical lines
 
-			//grass
-			if (this.randomId % 50 == 0 && frameCount % 120 == 0 && useR > 2) {
+			// //grass
+			// if (this.randomId % 50 == 0 && frameCount % 120 == 0 && useR > 2) {
 
-				// g.fill(bgColor)
-				g.push()
-				g.translate(useR + 20, 0)
-				g.stroke(this.color2)
-				g.translate(0, random([-this.r, this.r]))
-				g.line(0, 0, 0, -5)
-				g.line(0, 0, -3, -5)
-				g.line(0, 0, 3, -5)
-				g.pop()
-			}
+			// 	// g.fill(bgColor)
+			// 	g.push()
+			// 	g.translate(useR + 20, 0)
+			// 	g.stroke(this.color2)
+			// 	g.translate(0, random([-this.r, this.r]))
+			// 	g.line(0, 0, 0, -5)
+			// 	g.line(0, 0, -3, -5)
+			// 	g.line(0, 0, 3, -5)
+			// 	g.pop()
+			// }
 
 			if (this.randomId % verticalLineSpan == 0) {
 				g.fill(0)
@@ -1152,7 +1203,7 @@ function setup() {
 	let pairId = int(random(7))
 
 	let spanOptions = [10, 12, 16, 20, 32, 44, 60, 68, 72]
-	let maxSizeOptions = [250, 300, 350, 400, 550, 600, 740, 800, 900]
+	let maxSizeOptions = [250, 300, 350, 450, 600, 650, 800, 850, 1000]
 
 	let minPairId = features.minPairId
 	let maxPairId = features.maxPairId
@@ -1168,11 +1219,9 @@ function setup() {
 
 	if (features.layout == "natural") {
 
-
-		//noprotect
 		for (let x = 0; x <= width; x += span) {
 			if (noise(x / 2) < ignorePossibility) continue
-			let skipRatio = features.shapeType == 'rect' ? -0.75 : -0.8
+			let skipRatio = features.shapeType == 'rect' ? -0.85 : -0.9
 			// if (features.shapeType == 'rect') {
 			if (sin(x + seed * PI) < skipRatio) continue
 			// }
@@ -1238,7 +1287,7 @@ function setup() {
 			}))
 		}
 	} else if (features.layout == "blocks") {
-		let useMaxSize = features.shapeType == 'rect' ? (maxSize * 1) : features.shapeType == 'polygon' ? (maxSize * 1) : maxSize
+		let useMaxSize = features.shapeType == 'rect' ? (maxSize * 1) : features.shapeType == 'polygon' ? (maxSize * 1.3) : maxSize
 		let direction = random() < 0.5
 		let blockWidth = map(noise(seed), 0, 1, 0.1, 0.15) * (direction ? height : width)
 		let blockHeight = map(noise(seed + 1), 0, 1, 0.3, 0.5) * (direction ? width : height)
@@ -1460,6 +1509,10 @@ function draw() {
 	noStroke()
 	image(overallTexture, 0, 0)
 	pop()
+
+	// if (mouseIsPressed) {
+	// 	image(oG, 0, 0)
+	// }
 }
 
 function keyPressed() {
