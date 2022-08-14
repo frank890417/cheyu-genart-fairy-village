@@ -1203,7 +1203,7 @@ function setup() {
 	let pairId = int(random(7))
 
 	let spanOptions = [10, 12, 16, 20, 32, 44, 60, 68, 72]
-	let maxSizeOptions = [250, 300, 350, 450, 600, 650, 800, 850, 1000]
+	let maxSizeOptions = [250, 300, 350, 400, 550, 600, 740, 800, 900]
 
 	let minPairId = features.minPairId
 	let maxPairId = features.maxPairId
