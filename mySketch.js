@@ -1221,7 +1221,7 @@ function setup() {
 
 		for (let x = 0; x <= width; x += span) {
 			if (noise(x / 2) < ignorePossibility) continue
-			let skipRatio = features.shapeType == 'rect' ? -0.85 : -0.9
+			let skipRatio = features.shapeType == 'rect' ? -0.8 : -0.85
 			// if (features.shapeType == 'rect') {
 			if (sin(x + seed * PI) < skipRatio) continue
 			// }
