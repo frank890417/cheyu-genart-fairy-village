@@ -412,7 +412,7 @@ const frag = `
 
 		result*=0.95+texColor0/10.;
 		result*=0.95+ vec4(canvasOffset,1.)/50.;
-		result = mix(result-mod(result,0.1),result,0.2  );
+		result = mix(result-mod(result,0.05),result,0.1  );
 
 		
 		result = mix(result ,result*result,0.05  );
@@ -566,14 +566,14 @@ var features = {}
 
 function calFeatures() {
 	features.style = random({
-		mix: 6,
-		glow: 1,
+		mix: 9,
+		glow: 3,
 		area: 10,
-		pure: 2,
-		level: 3,
+		pure: 1,
+		level: 4,
 		// stroke: 1000
 	})
-	features.mapScale = random(300, 2000)
+	features.mapScale = random(200, 1000)
 	features.levelSpeed = random([15, 20, 30, 40])
 	features.type3D = random(['static', 'sharp'])
 	features.type3D = 'static'
@@ -1169,7 +1169,7 @@ function setup() {
 	let rx = random([-0.1, -0.05, 0, 0, 0.05, 0.1]) * width;
 	let ry = random([-0.1, -0.05, 0, 0, 0.05, 0.1]) * height
 	let ra = random([-0.2, -0.1, 0.1, 0.2])
-	let rscale = random([1.05, 1.1, 1.15, 1.2])
+	let rscale = random([0.95, 1, 1.05, 1.1])
 
 	for (let g of [oG, olayG]) {
 		// console.log(g)
