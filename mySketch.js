@@ -568,7 +568,7 @@ function calFeatures() {
 	features.style = random({
 		mix: 9,
 		glow: 3,
-		area: 10,
+		area: 8,
 		pure: 1,
 		level: 4,
 		// stroke: 1000
