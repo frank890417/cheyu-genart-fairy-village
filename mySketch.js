@@ -339,8 +339,8 @@ const frag = `
 		st.x*=u_resolution.x/u_resolution.y;
 		vec2 stBorder =st;
 
-		st.x+=pNoise(st*20.,5)*pNoise(st*10.+2.,10)/20.;
-		st.y += pNoise(st * 20., 5) * pNoise(st * 10. + 2., 10) / 20.;
+		// st.x+=pNoise(st*20.,5)*pNoise(st*10.+2.,10)/20.;
+		// st.y += pNoise(st * 20., 5) * pNoise(st * 10. + 2., 10) / 20.;
 	
 		vec3 canvasOffset = texture2D(u_canvas_tex,st).rgb;
 		st.x+= canvasOffset.r/80. ;
@@ -412,15 +412,15 @@ const frag = `
 
 		result*=0.95+texColor0/10.;
 		result*=0.95+ vec4(canvasOffset,1.)/50.;
-		result = mix(result-mod(result,0.05),result,0.1  );
+		result = mix(result-mod(result,0.04),result,0.1  );
 
 		
 		result = mix(result ,result*result,0.05  );
 
 		float ps = pNoise(st*50.,5);
-		result.b *= 0.95+pNoise(st*5.+result.b + ps,3)/5.;
-		result.g *= 0.95+pNoise(st*5.+result.g+ ps,3)/5.;
-		result.r *= 0.95+pNoise(st*5.+result.r+ ps,3)/5.;
+		result.b *= 0.95+pNoise(st*3.+result.b + ps,3)/5.;
+		result.g *= 0.95+pNoise(st*3.+result.g+ ps,3)/5.;
+		result.r *= 0.95+pNoise(st*3.+result.r+ ps,3)/5.;
 
 
 		if ( isBorder){
