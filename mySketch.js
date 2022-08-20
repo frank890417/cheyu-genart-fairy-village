@@ -1135,7 +1135,7 @@ function preload() {
 
 function setup() {
 
-	pixelDensity(2);
+	pixelDensity(4);
 
 	noiseSeed(random() * 50000)
 	randomSeed(random() * 5000)
