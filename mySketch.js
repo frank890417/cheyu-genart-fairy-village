@@ -415,7 +415,7 @@ const frag = `
 
 		result*=0.95+texColor0/10.;
 		result*=0.95+ vec4(canvasOffset,1.)/50.;
-		result = mix(result-mod(result,0.04),result,0.1  );
+		// result = mix(result-mod(result,0.04),result,0.1  );
 
 		
 		result = mix(result ,result*result,0.05  );
@@ -471,7 +471,7 @@ const frag_texture = `
 			vec3 color = vec3(0.); 
 		  
 			color+= pNoise(st*vec2(600. ,1.) + vec2(0, pNoise(st*vec2(400.,1.),10)*50.),10)/2.; 
-			color/=2.;
+			color/=1.5;
 		
 			
 			
@@ -635,8 +635,8 @@ calFeatures()
 //#FEATURE_END
 
 let colors
-var DEFAULT_SIZE = 1200;
-let ratio = 1200 / 1000
+var DEFAULT_SIZE = 1080;
+let ratio = 1080 / 820
 var WIDTH = window.innerWidth;
 var HEIGHT = window.innerHeight;
 var DIM = HEIGHT;
@@ -1135,7 +1135,7 @@ function preload() {
 
 function setup() {
 
-	pixelDensity(3);
+	pixelDensity(2);
 
 	noiseSeed(random() * 50000)
 	randomSeed(random() * 5000)
@@ -1170,6 +1170,7 @@ function setup() {
 		g.translate(width / 2, height / 2)
 		g.rotate(ra)
 		g.scale(rscale)
+		g.scale(0.9)
 		g.translate(-width / 2, -height / 2)
 
 	}
