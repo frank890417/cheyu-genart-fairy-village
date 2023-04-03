@@ -10,7 +10,10 @@
     "preview": "cd batch_img/previewer;yarn run serve;",
     "render": "cd batch_img; node queue.js 800 1000 true true"
   },
-  "dependencies": {},
+  "dependencies": {
+    "minify": "^9.1.0",
+    "uglify-js": "^3.17.4"
+  },
   "devDependencies": {
     "adm-zip": "^0.5.9",
     "copy-webpack-plugin": "^9.0.1",

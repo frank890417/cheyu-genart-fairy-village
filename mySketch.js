@@ -1,3 +1,6 @@
+
+var features = {}
+//#FEATURE_START
 let projectNumber = Math.floor(parseInt(tokenData.tokenId) / 1000000);
 let mintNumber = parseInt(tokenData.tokenId) % (projectNumber * 1000000);
 let seed = parseInt(tokenData.hash.slice(0, 16), 16);
@@ -83,6 +86,74 @@ let random = (obj, obj2) => {
 
 	}
 }
+
+
+
+function calFeatures() {
+	features.style = random({
+		mix: 9,
+		glow: 3,
+		area: 8,
+		pure: 1,
+		level: 4,
+		// stroke: 1000
+	})
+	features.mapScale = random(200, 1000)
+	features.levelSpeed = random([15, 20, 30, 40])
+	features.type3D = random(['static', 'sharp'])
+	features.type3D = 'static'
+	// features.style=random()<1?'stroke':'normal'
+	// features.style=random()<0.2?'shape':features.style 
+	features.rotateFactors = random([
+		[0],
+		[0],
+		[0],
+		[0],
+		[0, 0.05],
+		[0, -0.05],
+		[0.05, 0, 0, 0, 0, 0, 0, -0.05]
+
+	])
+	features.minPairId = random({
+		0: 30,
+		1: 10,
+		2: 5,
+		3: 5,
+	}) * 1
+	features.maxPairId =
+		random({
+			5: 1,
+			6: 10,
+			7: 5,
+			8: 5
+		}) * 1
+	features.layout = random({
+		natural: 3,
+		ring: 2,
+		blocks: 1,
+		spiral: 1,
+		chess: 1,
+		pie: 1,
+	})
+
+	features.vNoiseScale = random([40, 50, 75, 100, 120])
+	features.hasGrid = false
+	features.hasBorder = true
+	features.wormholeCount = random([1, 2, 3])
+	features.colorChangeFramSpan = random([30, 40, 60, 100])
+	features.shapeType = random({
+		'rect': 4,
+		'ellipse': 5,
+		'polygon': 3,
+		'triangle': 1,
+		'noise': 1
+	})
+	features.distortFactor = features.shapeType == 'ellipse' ? 0.8 : 0.1
+	features.hasDeco = true
+
+}
+calFeatures()
+//#FEATURE_END
 
 let pushpop = (func) => {
 	push()
@@ -353,9 +424,9 @@ const frag = `
 
 		if (u_distortFactor>0.){
 			float distortFactor = u_distortFactor;
-			st.x+=  cnoise(vec3(st*2.,${(random() * 1000).toFixed(4)}))/(30.)*distortFactor  ;
-			st.y+= cnoise(vec3(st*20.,${(random() * 1000).toFixed(4)}))/(30.)*distortFactor   
-				+ cnoise(vec3(st/2.,${(random() * 1000).toFixed(4)}))/(100.)*distortFactor;
+			st.x+=  cnoise(vec3(st*2.,30.))/(30.)*distortFactor  ;
+			st.y+= cnoise(vec3(st*20.,30.))/(30.)*distortFactor   
+				+ cnoise(vec3(st/2.,30.))/(100.)*distortFactor;
 			
 		}
 		vec4 texColor0 = texture2D(u_tex,st);
@@ -564,79 +635,12 @@ let themes = [
 	}
 ]
 
-//#FEATURE_START
-var features = {}
 
-function calFeatures() {
-	features.style = random({
-		mix: 9,
-		glow: 3,
-		area: 8,
-		pure: 1,
-		level: 4,
-		// stroke: 1000
-	})
-	features.mapScale = random(200, 1000)
-	features.levelSpeed = random([15, 20, 30, 40])
-	features.type3D = random(['static', 'sharp'])
-	features.type3D = 'static'
-	// features.style=random()<1?'stroke':'normal'
-	// features.style=random()<0.2?'shape':features.style 
-	features.rotateFactors = random([
-		[0],
-		[0],
-		[0],
-		[0],
-		[0, 0.05],
-		[0, -0.05],
-		[0.05, 0, 0, 0, 0, 0, 0, -0.05]
 
-	])
-	features.minPairId = random({
-		0: 30,
-		1: 10,
-		2: 5,
-		3: 5,
-	}) * 1
-	features.maxPairId =
-		random({
-			5: 1,
-			6: 10,
-			7: 5,
-			8: 5
-		}) * 1
-	features.layout = random({
-		natural: 3,
-		ring: 2,
-		blocks: 1,
-		spiral: 1,
-		chess: 1,
-		pie: 1,
-	})
-
-	features.vNoiseScale = random([40, 50, 75, 100, 120])
-	features.hasGrid = false
-	features.hasBorder = true
-	features.wormholeCount = random([1, 2, 3])
-	features.colorChangeFramSpan = random([30, 40, 60, 100])
-	features.shapeType = random({
-		'rect': 4,
-		'ellipse': 5,
-		'polygon': 3,
-		'triangle': 1,
-		'noise': 1
-	})
-	features.distortFactor = features.shapeType == 'ellipse' ? 0.8 : 0.1
-	features.hasDeco = true
-
-}
-calFeatures()
-
-//#FEATURE_END
 
 let colors
-var DEFAULT_SIZE = 1080;
-let ratio = 1080 / 820
+var DEFAULT_SIZE = 1200;
+let ratio = 1080 / 1080
 var WIDTH = window.innerWidth;
 var HEIGHT = window.innerHeight;
 var DIM = HEIGHT;
@@ -706,10 +710,15 @@ class Particle {
 		shClr.setAlpha((9 - map(this.r, 100, 0, 0, 5, true)) * 0.7)
 		g.drawingContext.shadowColor = shClr
 		shClr.setAlpha(255)
-		g.drawingContext.shadowOffsetY = 10
-		g.drawingContext.shadowOffsetX = 10
+		g.drawingContext.shadowOffsetY = 5
+		g.drawingContext.shadowOffsetX = 5
 
-
+		///----
+		// g.drawingContext.shadowColor = color(0, 0)
+		// g.drawingContext.shadowOffsetY = 0
+		// g.drawingContext.shadowOffsetX = 0
+		// g.blendMode(BLEND)
+		//
 
 		if (features.style == "glow") {
 			if (frameCount % 16 == 1) {
@@ -1488,8 +1497,8 @@ function setup() {
 		} else {
 			drawToMainCanvas()
 		}
-		// if (frameCount % 30 == 0) {
-		// 	drawToMainCanvas()
+		// if (frameCount % 3 == 0) {
+		drawToMainCanvas()
 		// }
 
 		counter -= 1

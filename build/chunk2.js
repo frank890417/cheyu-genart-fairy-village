@@ -70,81 +70,19 @@ let themes = [
 	{
 		label: "",
 		colors: "ebe9e9-f3f8f2-3581b8-fcb07e-dee2d6-181175".split("-").map(a => "#" + a)
+	},
+	{
+		label: "Energetic",
+		colors: "000000-1A4D2E-FF9F29-FAF3E3-FEE0C0-ff5c3f".split("-").map(a => "#" + a)
 	}
 ]
 
-//#FEATURE_START
-var features = {}
 
-function calFeatures() {
-	features.style = random({
-		mix: 3,
-		glow: 1,
-		area: 9,
-		pure: 1,
-		level: 1
-		// stroke: 1000
-	})
-	features.mapScale = random(500, 2800)
-	features.levelSpeed = random([15, 20, 30, 40])
-	features.type3D = random(['static', 'sharp'])
-	features.type3D = 'static'
-	// features.style=random()<1?'stroke':'normal'
-	// features.style=random()<0.2?'shape':features.style 
-	features.rotateFactors = random([
-		[0],
-		[0],
-		[0],
-		[0],
-		[0, 0.05],
-		[0, -0.05],
-		[0.05, 0, 0, 0, 0, 0, 0, -0.05]
 
-	])
-	features.minPairId = random({
-		0: 30,
-		1: 10,
-		2: 1,
-		3: 1,
-		4: 1
-	}) * 1
-	features.maxPairId =
-		random({
-			5: 1,
-			6: 5,
-			7: 10,
-			8: 5
-		}) * 1
-	features.layout = random({
-		natural: 4,
-		ring: 2,
-		blocks: 1,
-		spiral: 1,
-		chess: 1,
-		pie: 1,
-	})
-
-	features.vNoiseScale = random([40, 50, 75, 100, 120])
-	features.hasGrid = false
-	features.hasBorder = true
-	features.wormholeCount = random([1, 2, 3])
-	features.colorChangeFramSpan = random([30, 40, 60, 100])
-	features.shapeType = random({
-		'rect': 4,
-		'ellipse': 5,
-		'polygon': 3,
-		'triangle': 1
-	})
-	features.distortFactor = features.shapeType == 'ellipse' ? 0.8 : 0.1
-
-}
-calFeatures()
-
-//#FEATURE_END
 
 let colors
-var DEFAULT_SIZE = 1400;
-let ratio = 1000 / 1000
+var DEFAULT_SIZE = 1200;
+let ratio = 1080 / 1080
 var WIDTH = window.innerWidth;
 var HEIGHT = window.innerHeight;
 var DIM = HEIGHT;
@@ -200,25 +138,29 @@ class Particle {
 		def.maxR = def.r
 		Object.assign(def, args)
 		Object.assign(this, def)
+		this.originalP = this.p.copy()
 	}
 	draw(g) {
 		let useR = this.r
 		if (useR < 0) return
+
 		g.push()
-		// g.blendMode(MULTIPLY)
+
 		let clr = color(this.color)
 		let shClr = color(0)
 		g.fill(clr)
-		shClr.setAlpha(10 - map(this.r, 100, 0, 0, 4, true))
-
+		shClr.setAlpha((9 - map(this.r, 100, 0, 0, 5, true)) * 0.7)
 		g.drawingContext.shadowColor = shClr
 		shClr.setAlpha(255)
 		g.drawingContext.shadowOffsetY = 10
 		g.drawingContext.shadowOffsetX = 10
-		// let dir = this.p.copy().sub(createVector(width / 2, height / 2)).heading()
-		// let shadowPanBase = 20
-		// g.drawingContext.shadowOffsetY = cos(dir) * shadowPanBase
-		// g.drawingContext.shadowOffsetX = sin(dir) * shadowPanBase
+
+		///----
+		// g.drawingContext.shadowColor = color(0, 0)
+		// g.drawingContext.shadowOffsetY = 0
+		// g.drawingContext.shadowOffsetX = 0
+		// g.blendMode(BLEND)
+		//
 
 		if (features.style == "glow") {
 			if (frameCount % 16 == 1) {
@@ -237,17 +179,19 @@ class Particle {
 				g.drawingContext.shadowColor = fogColor
 
 			} else {
+				g.strokeWeight(0.2)
 				g.blendMode(SCREEN)
 				g.fill(bgColor)
 				g.noStroke()
 			}
 		}
 		if (features.style == "pure" || features.style == "area") {
-			if (frameCount % 30 == 1) {
+			if (frameCount % 50 == 1) {
 				if (frameCount % 150 == 1 && useR > 36) {
 					g.strokeWeight(3)
 				} else {
-					g.drawingContext.setLineDash([1.5, 3])
+					g.strokeWeight(3)
+					g.drawingContext.setLineDash([1, 3])
 				}
 				// if (frameCount == 1) {
 				// 	g.strokeWeight(8)
@@ -255,7 +199,7 @@ class Particle {
 				// if (brightness(this.color) < 50) {
 				// 	g.stroke(255, 100)
 				// } else {
-				g.stroke(0, 200)
+				g.stroke(0, 100)
 				// g.stroke(0, 60)
 				// }
 
@@ -267,20 +211,9 @@ class Particle {
 		if (features.style == "pure") {
 			g.drawingContext.shadowColor = color(0, 7)
 		}
-		if (features.style == "squiggle") {
-			g.drawingContext.shadowColor = color(0, 20)
-		}
-
 		g.translate(this.p.x, this.p.y)
-		// g.scale(map(this.p.y, 0, height, 0, 2))
-		// g.translate((this.p.x - width / 2) * map(this.p.y, 0, height, 0.5, 2) + width / 2, (this.p.y - width / 2) / 1.2 + width / 2)
-
-
 		g.push()
-
-
 		if (features.shapeType == "polygon") {
-
 			g.translate(0, -frameCount / (6 + noise(10, seed) * 2))
 			g.rotate(frameCount / 500)
 			if (this.randomId % 40 == 0) {
@@ -306,7 +239,6 @@ class Particle {
 
 		} else if (features.shapeType == "triangle") {
 
-
 			g.translate(0, -frameCount / (8 + noise(10, seed) * 2))
 			g.rotate(frameCount / 2000)
 			if (this.randomId % 40 == 0) {
@@ -315,6 +247,13 @@ class Particle {
 			g.drawingContext.shadowOffsetY = 10
 			g.drawingContext.shadowOffsetX = 10
 			g.drawingContext.shadowColor = color(0, 5)
+
+			///----
+			g.drawingContext.shadowColor = color(0, 0)
+			g.drawingContext.shadowOffsetY = 0
+			g.drawingContext.shadowOffsetX = 0
+			g.blendMode(BLEND)
+			//
 			g.beginShape()
 			let lines = []
 			for (let i = 0; i < 3; i++) {
@@ -405,61 +344,97 @@ class Particle {
 
 				g.pop()
 			}
-			g.translate(0, -frameCount / (30 + noise(10, this.randomId) * 20))
+			g.drawingContext.shadowColor = color(0, 5)
+			g.translate(-frameCount / (60 + noise(10, this.randomId) * 20), -frameCount / (60 + noise(10, this.randomId) * 20))
 			g.drawingContext.shadowOffsetY = 10
 			g.drawingContext.shadowOffsetX = 10
+
+
+			///----
+			g.drawingContext.shadowColor = color(0, 0)
+			g.drawingContext.shadowOffsetY = 0
+			g.drawingContext.shadowOffsetX = 0
+			g.blendMode(BLEND)
+			//
 			g.ellipse(0, 0, useR, useR)
+
+
+		} else if (features.shapeType == "noise") {
+			if (this.randomId % 3 == 0 || this.randomId % 4 == 0) {
+
+				// g.noStroke()
+
+				let d = dist(this.p.x, this.p.y, width / 2, height / 2) + 5
+				let ang = atan2(this.p.y - height / 2, this.p.x - width / 2)
+				// g.drawingContext.shadowColor = color(0, 10)
+				// g.drawingContext.shadowOffsetX = -d * cos(ang) / 40
+				// g.drawingContext.shadowOffsetY = -d * sin(ang) / 40
+				let angSpan = noise(this.randomId) * 0.4 + 0.03
+				g.beginShape()
+				for (let ang = 0; ang < 2 * PI; ang += angSpan) {
+					let freq = noise(this.randomId) * 300 + 100
+					let useAng = ang + noise(frameCount / freq, ang, this.randomId) + this.randomId % 360
+					let useR = 1.2 * this.r * noise(frameCount / freq, ang, this.randomId)
+					let xx = cos(useAng) * useR
+					let yy = sin(useAng) * useR
+					vertex(xx, yy)
+				}
+				g.endShape(CLOSE)
+			}
 		}
 		g.pop()
 
 
-		// stroke decos
-		let verticalLineSpan = 40
-		if (features.style == "shape") verticalLineSpan = 30
+		if (features.hasDeco) {
 
-		if (features.style == "stroke") verticalLineSpan = 35
-		// vertical lines
+			// stroke decos
+			let verticalLineSpan = 40
+			if (features.style == "shape") verticalLineSpan = 30
 
-		//grass
-		if (this.randomId % 50 == 0 && frameCount % 120 == 0 && useR > 2) {
+			if (features.style == "stroke") verticalLineSpan = 35
+			// vertical lines
 
-			// g.fill(bgColor)
-			g.push()
-			g.translate(useR + 20, 0)
-			g.stroke(this.color2)
-			g.translate(0, random([-this.r, this.r]))
-			g.line(0, 0, 0, -5)
-			g.line(0, 0, -3, -5)
-			g.line(0, 0, 3, -5)
-			g.pop()
+			// //grass
+			// if (this.randomId % 50 == 0 && frameCount % 120 == 0 && useR > 2) {
+
+			// 	// g.fill(bgColor)
+			// 	g.push()
+			// 	g.translate(useR + 20, 0)
+			// 	g.stroke(this.color2)
+			// 	g.translate(0, random([-this.r, this.r]))
+			// 	g.line(0, 0, 0, -5)
+			// 	g.line(0, 0, -3, -5)
+			// 	g.line(0, 0, 3, -5)
+			// 	g.pop()
+			// }
+
+			if (this.randomId % verticalLineSpan == 0) {
+				g.fill(0)
+				g.ellipse(0, useR + 10, 2, 2)
+			}
+
+			if (this.randomId % 25 == 0) {
+
+				g.fill(bgColor)
+				g.ellipse(useR / 2, 0, 2, 2)
+			}
+			if (this.randomId % 80 == 0) {
+
+				g.fill(255)
+				let whiteR = (noise(this.randomId, this.p.x / 40, this.p.y / 40) * 2) + 1
+				g.ellipse(-useR - 10, useR + 10, whiteR, whiteR)
+			}
+			if (useR > 10 && (this.randomId + frameCount) % 60 == 0 && this.randomId % 4 == 0) {
+				g.fill(this.color2)
+				g.ellipse(-this.r, 4, 4)
+			}
+			if (random() < 0.001 && frameCount % 10 == 0) {
+				g.stroke(0)
+				g.noFill()
+				g.ellipse(0, useR + 10, random(this.r))
+			}
+
 		}
-
-		if (this.randomId % verticalLineSpan == 0) {
-			g.fill(0)
-			g.ellipse(0, useR + 10, 2, 2)
-		}
-
-		if (this.randomId % 25 == 0) {
-
-			g.fill(bgColor)
-			g.ellipse(useR / 2, 0, 2, 2)
-		}
-		if (this.randomId % 80 == 0) {
-
-			g.fill(255)
-			let whiteR = (noise(this.randomId, this.p.x / 40, this.p.y / 40) * 2) + 1
-			g.ellipse(-useR - 10, useR + 10, whiteR, whiteR)
-		}
-		if (useR > 10 && (this.randomId + frameCount) % 60 == 0 && this.randomId % 4 == 0) {
-			g.fill(this.color2)
-			g.ellipse(-this.r, 4, 4)
-		}
-		if (random() < 0.001 && frameCount % 10 == 0) {
-			g.stroke(0)
-			g.noFill()
-			g.ellipse(0, useR + 10, random(this.r))
-		}
-
 
 		g.pop()
 
@@ -499,7 +474,7 @@ class Particle {
 		}
 
 
-		if (this.r <= 2) {
+		if (this.r <= 4) {
 			this.alive = false
 		}
 		if (frameCount > 650 && random() < 0.04 && this.randomId % 6 <= 3) {

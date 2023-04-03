@@ -21,7 +21,45 @@ const frag_functions_default = `
 			_st *= _zoom;
 			return fract(_st);
 	}
-
+	mat4 brightnessMatrix( float brightness )
+	{
+		return mat4( 1, 0, 0, 0,
+					 0, 1, 0, 0,
+					 0, 0, 1, 0,
+					 brightness, brightness, brightness, 1 );
+	}
+	
+	mat4 contrastMatrix( float contrast )
+	{
+		float t = ( 1.0 - contrast ) / 2.0;
+		
+		return mat4( contrast, 0, 0, 0,
+					 0, contrast, 0, 0,
+					 0, 0, contrast, 0,
+					 t, t, t, 1 );
+	
+	}
+	
+	mat4 saturationMatrix( float saturation )
+	{
+		vec3 luminance = vec3( 0.3086, 0.6094, 0.0820 );
+		
+		float oneMinusSat = 1.0 - saturation;
+		
+		vec3 red = vec3( luminance.x * oneMinusSat );
+		red+= vec3( saturation, 0, 0 );
+		
+		vec3 green = vec3( luminance.y * oneMinusSat );
+		green += vec3( 0, saturation, 0 );
+		
+		vec3 blue = vec3( luminance.z * oneMinusSat );
+		blue += vec3( 0, 0, saturation );
+		
+		return mat4( red,     0,
+					 green,   0,
+					 blue,    0,
+					 0, 0, 0, 1 );
+	}
 	//	Classic Perlin 3D Noise 
 	//	by Stefan Gustavson
 
@@ -215,43 +253,40 @@ const frag = `
 		vec2 originalSt = st;
 		st.x*=u_resolution.x/u_resolution.y;
 		vec2 stBorder =st;
-
-		// st.x+=pNoise(st*20.,5)*pNoise(st*10.+2.,10)/20.;
-		// st.y += pNoise(st * 20., 5) * pNoise(st * 10. + 2., 10) / 20.;
-		 
  
 	
 		vec3 canvasOffset = texture2D(u_canvas_tex,st).rgb;
-		st.x+=0.35/255.- canvasOffset.r/255.*3. ;
-		st.y+=0.35/255.- canvasOffset.g/255.*3.  ;
-		
-		float distortFactor = u_distortFactor;
-		st.x+=  cnoise(vec3(st*2.,${(random() * 1000).toFixed(4)}))/(30.)*distortFactor  ;
-		st.y+= cnoise(vec3(st*20.,${(random() * 1000).toFixed(4)}))/(30.)*distortFactor 
-					+ cnoise(vec3(st/2.,${(random() * 1000).toFixed(4)}))/(100.)*distortFactor;
-		
+		st.x+= canvasOffset.r/80. ;
+		st.y+= canvasOffset.g/80.  ;
+
+
+		if (u_distortFactor>0.){
+			float distortFactor = u_distortFactor;
+			st.x+=  cnoise(vec3(st*2.,30.))/(30.)*distortFactor  ;
+			st.y+= cnoise(vec3(st*20.,30.))/(30.)*distortFactor   
+				+ cnoise(vec3(st/2.,30.))/(100.)*distortFactor;
+			
+		}
 		vec4 texColor0 = texture2D(u_tex,st);
-
-
 		
 		//offset color Blocks
-		float offsetColor = 1./300.;
-		stBorder.x-= texColor0.r*offsetColor;
-		stBorder.y-=texColor0.g*offsetColor+ texColor0.b*offsetColor;
+		float offsetColor = 1./200.;
+		stBorder.x-=(0.5-texColor0.r-texColor0.b/2.)*offsetColor;
+		stBorder.y-=(0.5- texColor0.g)*offsetColor+ texColor0.b*offsetColor;
 		
 		vec4 texColor1 = texture2D(u_tex,st);
 
 		
 		vec2 st2 = st;
 		//brush feeling  
-		float brushFactor = 500.;
-		st2.x+=cnoise(vec3(st*1000.,100.))/brushFactor;
-		st2.y+=cnoise(vec3(st*1000.,1000.))/brushFactor; 
+		float brushFactor = 5000.;
+		// st2.x+=cnoise(vec3(st*1000.,100.))/brushFactor;
+		// st2.y+=cnoise(vec3(st*1000.,1000.))/brushFactor; 
  
 		vec4 texColor2 = texture2D(u_tex,st2);
 		vec2 st3 = st;
-		st3.x += pNoise(st * 500., 10) / 2.;
-		st3.y += pNoise(st * 500., 10) / 2.;
+		// st3.x += pNoise(st * 500., 10) / 2.;
+		// st3.y += pNoise(st * 500., 10) / 2.;
 		vec4 texColor3 = texture2D(u_tex, st3);
 
 		texColor2 = (texColor2*1. + texColor3*1.)/1.2;
@@ -260,7 +295,7 @@ const frag = `
 		// texColor*=1.-d+0.3;
 		// gl_FragColor= vec4(color,1.0)+texColor2; 
 		
-		float borderWidth = 24.;
+		float borderWidth = 30.;
 		bool isBorder = stBorder.x*u_resolution.x<borderWidth
 		|| (1.-stBorder.x)*u_resolution.x<borderWidth 
 		|| stBorder.y*u_resolution.y<borderWidth 
@@ -286,6 +321,20 @@ const frag = `
 		// result.r*=fade;
 		// result.g *= fade;
 		// result.b *= fade;
+
+		result*=0.95+texColor0/10.;
+		result*=0.95+ vec4(canvasOffset,1.)/50.;
+		// result = mix(result-mod(result,0.04),result,0.1  );
+
+		
+		result = mix(result ,result*result,0.05  );
+
+		float ps = pNoise(st*50.,5);
+		result.b *= 0.95+pNoise(st*3.+result.b + ps,3)/5.;
+		result.g *= 0.95+pNoise(st*3.+result.g+ ps,3)/5.;
+		result.r *= 0.95+pNoise(st*3.+result.r+ ps,3)/5.;
+
+
 		if ( isBorder){
 			result.rgb= vec3(u_bgColor);
 		} else {
@@ -293,7 +342,9 @@ const frag = `
 			// if ( distance(result.rgb, u_bgColor.rgb)<0.01 ){
 			// 	result.a=0.;
 			// }
-		} 
+		} 		
+		
+ 
 		gl_FragColor =result;	
 	}
 `
@@ -326,23 +377,17 @@ const frag_texture = `
 			st*=vec2(4.,1.);
 		
 			// st.y = 1.0 - st.y;
-			vec3 color = vec3(0.);
-			color+=cnoise(vec3(st*20.,10.))/7./2.;
-			color+=cnoise(vec3(st*30.,10.))/9./2.;
-			color+=cnoise(vec3(st*10.,10.))/9./2.;
+			vec3 color = vec3(0.); 
+		  
+			color+= pNoise(st*vec2(600. ,1.) + vec2(0, pNoise(st*vec2(400.,1.),10)*50.),10)/2.; 
+			color/=1.5;
 		
-			color+=cnoise(vec3(st*200.,10.))/9.;
-			color+=cnoise(vec3(st*300.,10.))/11.;
-			color+=cnoise(vec3(st*100.,10.))/11.;
-		
-			color+=cnoise(vec3(st*200.,10.))/9.;
-			color+=cnoise(vec3(st*300.,10.))/11.;
-			color+=cnoise(vec3(st*100.,10.))/11.;
-			color+=pNoise(st*10.,5)*pNoise(st*10.+2.,10)/3.;
-			color+=pNoise(st*30.,5)*pNoise(st*40.+2.,10)/3.; 
-			color/=2.;
-		
+			
+			
 			color = 1.-color;
+			color*= 1.+pNoise(st*10. + pNoise(st*50.,5),3); 
+
+
 			color*=vec3(1.,1.,0.96);
 		
 		// vec3 color = vec3(st.x,st.y,1.);

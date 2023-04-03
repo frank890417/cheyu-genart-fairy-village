@@ -1,0 +1,137 @@
+[
+    {
+        "type": "enum",
+        "name": "style",
+        "options": [
+            "mix",
+            "glow",
+            "area",
+            "pure",
+            "level"
+        ]
+    },
+    {
+        "type": "number",
+        "name": "mapScale",
+        "min": 200,
+        "max": 1000,
+        "step": 1
+    },
+    {
+        "type": "enum",
+        "name": "levelSpeed",
+        "options": [
+            15,
+            20,
+            30,
+            40
+        ]
+    },
+    {
+        "type": "enum",
+        "name": "type3D",
+        "options": [
+            "static",
+            "sharp"
+        ]
+    },
+    {
+        "type": "number",
+        "name": "rotateFactors",
+        "min": 0,
+        "max": 0.05,
+        "step": 0.01
+    },
+    {
+        "type": "enum",
+        "name": "minPairId",
+        "options": [
+            0,
+            1,
+            2,
+            3
+        ]
+    },
+    {
+        "type": "enum",
+        "name": "maxPairId",
+        "options": [
+            5,
+            6,
+            7,
+            8
+        ]
+    },
+    {
+        "type": "enum",
+        "name": "layout",
+        "options": [
+            "natural",
+            "ring",
+            "blocks",
+            "spiral",
+            "chess",
+            "pie"
+        ]
+    },
+    {
+        "type": "enum",
+        "name": "vNoiseScale",
+        "options": [
+            40,
+            50,
+            75,
+            100,
+            120
+        ]
+    },
+    {
+        "type": "boolean",
+        "name": "hasGrid"
+    },
+    {
+        "type": "boolean",
+        "name": "hasBorder"
+    },
+    {
+        "type": "enum",
+        "name": "wormholeCount",
+        "options": [
+            1,
+            2,
+            3
+        ]
+    },
+    {
+        "type": "enum",
+        "name": "colorChangeFramSpan",
+        "options": [
+            30,
+            40,
+            60,
+            100
+        ]
+    },
+    {
+        "type": "enum",
+        "name": "shapeType",
+        "options": [
+            "rect",
+            "ellipse",
+            "polygon",
+            "triangle",
+            "noise"
+        ]
+    },
+    {
+        "type": "number",
+        "name": "distortFactor",
+        "min": 0.1,
+        "max": 0.8,
+        "step": 0.01
+    },
+    {
+        "type": "boolean",
+        "name": "hasDeco"
+    }
+]
