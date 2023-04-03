@@ -639,19 +639,6 @@ let themes = [
 
 
 let colors
-var DEFAULT_SIZE = 1200;
-let ratio = 1080 / 1080
-var WIDTH = window.innerWidth;
-var HEIGHT = window.innerHeight;
-var DIM = HEIGHT;
-// var DIM = Math.min(WIDTH, HEIGHT);
-var M = DIM / DEFAULT_SIZE;
-console.log("hw", HEIGHT / WIDTH, ratio)
-// if (HEIGHT / WIDTH > 1 / ratio) {
-// 	DIM = WIDTH / ratio
-// 	M = DIM / DEFAULT_SIZE
-// }
-console.log('dim', DIM, WIDTH, HEIGHT, M)
 
 //001427
 //p5.js shader basic structure ref from https://www.openprocessing.org/sketch/920144
@@ -707,7 +694,7 @@ class Particle {
 		let clr = color(this.color)
 		let shClr = color(0)
 		g.fill(clr)
-		shClr.setAlpha((9 - map(this.r, 100, 0, 0, 5, true)) * 0.7)
+		shClr.setAlpha((12 - map(this.r, 100, 0, 0, 5, true)) * 0.7)
 		g.drawingContext.shadowColor = shClr
 		shClr.setAlpha(255)
 		g.drawingContext.shadowOffsetY = 5
@@ -802,8 +789,8 @@ class Particle {
 			if (this.randomId % 40 == 0) {
 				g.rotate(frameCount / 1200 + this.randomId % 2)
 			}
-			g.drawingContext.shadowOffsetY = 10
-			g.drawingContext.shadowOffsetX = 10
+			g.drawingContext.shadowOffsetY = 5
+			g.drawingContext.shadowOffsetX = 5
 			g.drawingContext.shadowColor = color(0, 5)
 
 			g.beginShape()
@@ -847,8 +834,8 @@ class Particle {
 				g.rect(0, 0, useR * 1.1 * 1., useR * 1.1 * 1., rd[0], rd[1], rd[2], rd[3])
 				g.pop()
 			}
-			g.drawingContext.shadowOffsetY = 10
-			g.drawingContext.shadowOffsetX = 10
+			g.drawingContext.shadowOffsetY = 5
+			g.drawingContext.shadowOffsetX = 5
 			if (this.randomId % 3 == 0 && frameCount > 400 + noise(this.randomId * 5) * 300) {
 				g.rect(0, 0, useR / 3, useR / 3)
 				g.rect(useR * 2 / 3, 0, useR / 3, useR / 3)
@@ -898,9 +885,20 @@ class Particle {
 			}
 			g.drawingContext.shadowColor = color(0, 5)
 			g.translate(-frameCount / (60 + noise(10, this.randomId) * 20), -frameCount / (60 + noise(10, this.randomId) * 20))
-			g.drawingContext.shadowOffsetY = 10
-			g.drawingContext.shadowOffsetX = 10
+			g.drawingContext.shadowOffsetY = 5
+			g.drawingContext.shadowOffsetX = 5
 			g.ellipse(0, 0, useR, useR)
+
+			// if (frameCount%50==0 && useR > 10){
+			// 	for(let i=0;i<2*PI;i+=2*PI/10){
+			// 		g.push()
+			// 		g.translate(useR/2*cos(i),useR/2*sin(i) )
+			// 		g.fill(bgColor)
+			// 		g.rotate(random(-0.3,0.3))
+			// 		g.rect(0,0,1,random(20))
+			// 		g.pop()
+			// 	}
+			// }
 
 
 		} else if (features.shapeType == "noise") {
@@ -1142,15 +1140,41 @@ function preload() {
 }
 //%
 
+let cnv
+let minW = Math.min(window.innerWidth, window.innerHeight)
+let originalW = 1200
+let ratio = 1400/1200
+var WIDTH = window.innerWidth;
+var HEIGHT = window.innerHeight;
+var DIM = HEIGHT;
+// var DIM = Math.min(WIDTH, HEIGHT);
+var M = DIM / DEFAULT_SIZE;
+console.log("hw", HEIGHT / WIDTH, ratio)
+// if (HEIGHT / WIDTH > 1 / ratio) {
+// 	DIM = WIDTH / ratio
+// 	M = DIM / DEFAULT_SIZE
+// }
+console.log('dim', DIM, WIDTH, HEIGHT, M)
+
+function windowResized() {
+	let minW = window.innerWidth
+	let minH = minW / ratio;
+
+	if (minH > window.innerHeight) {
+	  minH = window.innerHeight;
+	  minW = minH * ratio;
+	}
+	// resizeCanvas(minW, minH);
+	cnv.elt.style.width = minW + "px"
+	cnv.elt.style.height = minH + "px"
+} 
 function setup() {
 
-	pixelDensity(4);
+	pixelDensity(2);
 
 	noiseSeed(random() * 50000)
 	randomSeed(random() * 5000)
-	cnv = createCanvas(DIM * ratio, DIM);
-	width = DEFAULT_SIZE * ratio;
-	height = DEFAULT_SIZE;
+	cnv = createCanvas(1400,1200); 
 	background(0)
 
 	//prepare texture
@@ -1255,8 +1279,8 @@ function setup() {
 			manRingR = 0
 			baseX = random([0, 1]) * width
 			baseY = random([0, 1]) * height
-			minRingR = width / 3
-			maxRingR = map(noise(seed + 1), 0, 1, 1, 0.75) * width
+			minRingR =map(noise(100,seed ), 0, 1, 1/3, 1/2) * width
+			maxRingR = map(noise(seed + 1), 0, 1, 1, 1.2) * width
 			span *= 0.9
 		}
 
@@ -1392,7 +1416,7 @@ function setup() {
 
 	noLoop()
 	// while (particles.length >= 100) 
-	let renderCount = 500
+	let renderCount = 1000
 	let counter = renderCount
 
 	let signPoints = [
@@ -1462,7 +1486,7 @@ function setup() {
 
 		pushpop(() => {
 
-			scale(M)
+			
 
 			background(0)
 			translate(width / 2, height / 2)
@@ -1504,13 +1528,14 @@ function setup() {
 		counter -= 1
 	}
 	requestAnimationFrame(render)
+
+	windowResized()
 }
 
 function drawToMainCanvas() {
 	console.log("Draw To main")
 
 	pushpop(() => {
-		scale(M)
 		wC.shader(sh1)
 		sh1.setUniform('u_resolution', [width, height])
 		sh1.setUniform('u_time', millis() / 1000)
@@ -1586,13 +1611,13 @@ function drawToMainCanvas() {
 		})
 
 		pushpop(() => {
-			image(olayG, 0, 0)
+			image(olayG, 0, 0,width,height)
 		})
 
 		pushpop(() => {
 			blendMode(MULTIPLY)
 			noStroke()
-			image(overallTexture, 0, 0)
+			image(overallTexture, 0, 0,width,height)
 
 		})
 
