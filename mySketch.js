@@ -1142,7 +1142,7 @@ function preload() {
 
 let cnv
 let minW = Math.min(window.innerWidth, window.innerHeight)
-let originalW = 1200
+let originalW = 1400
 let ratio = 1400/1200
 var WIDTH = window.innerWidth;
 var HEIGHT = window.innerHeight;
@@ -1169,12 +1169,10 @@ function windowResized() {
 	cnv.elt.style.height = minH + "px"
 } 
 function setup() {
-
 	pixelDensity(2);
-
 	noiseSeed(random() * 50000)
 	randomSeed(random() * 5000)
-	cnv = createCanvas(1400,1200); 
+	cnv = createCanvas(originalW, originalW/ratio); 
 	background(0)
 
 	//prepare texture
@@ -1605,13 +1603,17 @@ function drawToMainCanvas() {
 				blendMode(SCREEN)
 				drawingContext.globalAlpha = 0.3
 				drawingContext.filter = "blur(100px)"
-				image(wC, 20, 20)
-				pop()
+				image(wC, 20, 20) 
 			}
+			blendMode(BURN)
+			drawingContext.globalAlpha = 0.3
+			image(wC, 0, 0)
+
 		})
 
 		pushpop(() => {
-			image(olayG, 0, 0,width,height)
+			image(olayG, 0, 0,width,height) 
+			
 		})
 
 		pushpop(() => {
